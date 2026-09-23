@@ -1,153 +1,190 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-export default function ProjectInfo({ project, prevProject }) {
-  const [displayed, setDisplayed] = useState(project)
-  const [animOut, setAnimOut] = useState(false)
-  const [animIn, setAnimIn] = useState(false)
-  const prevId = useRef(project?.id)
+export default function ProjectInfo({ project }) {
+  const [displayedProject, setDisplayedProject] = useState(project)
+  const [transitionState, setTransitionState] = useState('idle') // 'exiting' | 'entering' | 'idle'
+  const prevIdRef = useRef(project?.id)
 
   useEffect(() => {
-    if (!project || project.id === prevId.current) return
-    // Transition: out → in
-    setAnimOut(true)
-    const t1 = setTimeout(() => {
-      setDisplayed(project)
-      setAnimOut(false)
-      setAnimIn(true)
-      prevId.current = project.id
-      const t2 = setTimeout(() => setAnimIn(false), 600)
-      return () => clearTimeout(t2)
-    }, 280)
-    return () => clearTimeout(t1)
+    if (!project || project.id === prevIdRef.current) return
+
+    // Trigger smooth editorial transition
+    setTransitionState('exiting')
+    const timerOut = setTimeout(() => {
+      setDisplayedProject(project)
+      prevIdRef.current = project.id
+      setTransitionState('entering')
+
+      const timerIn = setTimeout(() => {
+        setTransitionState('idle')
+      }, 350)
+      return () => clearTimeout(timerIn)
+    }, 200)
+
+    return () => clearTimeout(timerOut)
   }, [project])
 
-  if (!displayed) return null
+  if (!displayedProject) return null
 
-  const outStyle = {
-    opacity: 0,
-    transform: 'translateY(12px)',
-    filter: 'blur(4px)',
-    transition: 'opacity 0.28s ease, transform 0.28s ease, filter 0.28s ease',
-  }
-  const inStyle = {
-    opacity: 1,
-    transform: 'translateY(0)',
-    filter: 'blur(0)',
-    transition: 'opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease',
-  }
-  const idleStyle = {
-    opacity: 1,
-    transform: 'translateY(0)',
-    filter: 'blur(0)',
-  }
+  // Transition styles
+  const isExiting = transitionState === 'exiting'
+  const isEntering = transitionState === 'entering'
 
-  const currentStyle = animOut ? outStyle : animIn ? inStyle : idleStyle
+  const transitionStyle = {
+    opacity: isExiting ? 0 : 1,
+    transform: isExiting
+      ? 'translateY(-10px) scale(0.98)'
+      : isEntering
+      ? 'translateY(12px) scale(0.98)'
+      : 'translateY(0) scale(1)',
+    filter: isExiting || isEntering ? 'blur(6px)' : 'blur(0px)',
+    transition: 'opacity 0.28s var(--ease-cinematic), transform 0.28s var(--ease-cinematic), filter 0.28s var(--ease-cinematic)',
+    willChange: 'opacity, transform, filter',
+  }
 
   return (
     <div
       aria-live="polite"
-      aria-label={`Active project: ${displayed.title}`}
+      aria-label={`Current featured project: ${displayedProject.title}`}
       style={{
-        ...currentStyle,
-        padding: '2.5rem 1.5rem 0',
-        maxWidth: '700px',
-        margin: '0 auto',
+        ...transitionStyle,
         textAlign: 'center',
+        maxWidth: '680px',
+        margin: '0 auto',
+        padding: '0 1.5rem',
+        pointerEvents: 'none',
       }}
     >
-      {/* Index + Category */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1rem' }}>
-        <span style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 800,
-          fontSize: '0.65rem',
-          color: 'var(--accent)',
-          letterSpacing: '0.05em',
-        }}>
-          {displayed.index}
+      {/* Editorial Index & Category Bar */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0.85rem',
+          marginBottom: '0.65rem',
+        }}
+      >
+        <span
+          style={{
+            fontFamily: 'var(--font-editorial)',
+            fontWeight: 800,
+            fontSize: '0.75rem',
+            color: 'var(--accent-red-bright)',
+            letterSpacing: '0.08em',
+          }}
+        >
+          {displayedProject.index}
         </span>
-        <span style={{ width: '24px', height: '1px', background: 'var(--text-dim)' }} />
-        <span style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 600,
-          fontSize: '0.6rem',
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: 'var(--text-muted)',
-        }}>
-          {displayed.category}
+        <span
+          style={{
+            width: '24px',
+            height: '1px',
+            background: 'rgba(255, 255, 255, 0.15)',
+          }}
+        />
+        <span
+          className="label-editorial"
+          style={{
+            color: 'var(--text-secondary)',
+            letterSpacing: '0.22em',
+          }}
+        >
+          {displayedProject.category}
         </span>
       </div>
 
-      {/* Title */}
-      <h2 style={{
-        fontFamily: 'var(--font)',
-        fontWeight: 700,
-        fontSize: 'clamp(1.4rem, 2.5vw, 2.2rem)',
-        color: 'var(--text)',
-        letterSpacing: '-0.02em',
-        lineHeight: 1.15,
-        marginBottom: '0.75rem',
-      }}>
-        {displayed.title}
-      </h2>
+      {/* Main Title */}
+      <h3
+        style={{
+          fontFamily: 'var(--font-editorial)',
+          fontWeight: 800,
+          fontSize: 'clamp(1.5rem, 2.5vw, 2.2rem)',
+          letterSpacing: '-0.025em',
+          color: 'var(--text-primary)',
+          lineHeight: 1.15,
+          marginBottom: '0.35rem',
+        }}
+      >
+        {displayedProject.title}
+      </h3>
 
-      {/* Category label */}
-      <p style={{
-        fontFamily: 'var(--font)',
-        fontWeight: 400,
-        fontSize: '0.7rem',
-        letterSpacing: '0.14em',
-        textTransform: 'uppercase',
-        color: 'var(--accent)',
-        marginBottom: '1rem',
-        opacity: 0.7,
-      }}>
-        {displayed.categoryLabel}
+      {/* Category Subtitle */}
+      <p
+        style={{
+          fontFamily: 'var(--font-editorial)',
+          fontSize: '0.72rem',
+          fontWeight: 600,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          color: 'var(--accent-red-bright)',
+          opacity: 0.9,
+          marginBottom: '0.85rem',
+        }}
+      >
+        {displayedProject.categoryLabel}
       </p>
 
       {/* Description */}
-      <p style={{
-        fontFamily: 'var(--font)',
-        fontWeight: 300,
-        fontSize: 'clamp(0.85rem, 1.1vw, 1rem)',
-        color: 'var(--text-muted)',
-        lineHeight: 1.75,
-        maxWidth: '440px',
-        margin: '0 auto 1.25rem',
-      }}>
-        {displayed.description}
+      <p
+        style={{
+          fontFamily: 'var(--font-editorial)',
+          fontWeight: 400,
+          fontSize: 'clamp(0.85rem, 1.1vw, 0.98rem)',
+          color: 'var(--text-secondary)',
+          lineHeight: 1.6,
+          maxWidth: '520px',
+          margin: '0 auto 1rem',
+        }}
+      >
+        {displayedProject.description}
       </p>
 
-      {/* Tools */}
-      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-        {displayed.tools.map(tool => (
-          <span key={tool} style={{
-            fontFamily: 'var(--font)',
-            fontWeight: 500,
-            fontSize: '0.55rem',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: 'var(--text-dim)',
-            padding: '0.25rem 0.65rem',
-            border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: '100px',
-          }}>
+      {/* Tools & Duration Pills */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '0.5rem',
+          flexWrap: 'wrap',
+        }}
+      >
+        {displayedProject.tools.map((tool) => (
+          <span
+            key={tool}
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontSize: '0.62rem',
+              fontWeight: 600,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: 'var(--text-muted)',
+              padding: '0.25rem 0.75rem',
+              borderRadius: 'var(--radius-pill)',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+            }}
+          >
             {tool}
           </span>
         ))}
-        {displayed.duration && (
-          <span style={{
-            fontFamily: 'var(--font)',
-            fontWeight: 500,
-            fontSize: '0.55rem',
-            letterSpacing: '0.12em',
-            color: 'var(--text-dim)',
-            padding: '0.25rem 0.65rem',
-            border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: '100px',
-          }}>
-            {displayed.duration}
+
+        {displayedProject.duration && (
+          <span
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontSize: '0.62rem',
+              fontWeight: 600,
+              letterSpacing: '0.1em',
+              color: 'var(--text-muted)',
+              padding: '0.25rem 0.75rem',
+              borderRadius: 'var(--radius-pill)',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.06)',
+            }}
+          >
+            {displayedProject.duration}
           </span>
         )}
       </div>

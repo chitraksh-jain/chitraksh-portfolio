@@ -1,22 +1,32 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
-const SKILLS = ['Premiere Pro', 'After Effects', 'Motion Graphics', 'Post-Production']
+const SKILLS = [
+  'Adobe Premiere Pro',
+  'After Effects',
+  'Motion Graphics',
+  'Post-Production',
+  'Social Media Content',
+]
 
-export default function Hero() {
-  const [visible, setVisible] = useState(false)
-  const heroRef = useRef(null)
+export default function Hero({ scrollY }) {
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // Small delay so everything doesn't fire on paint
-    const t = setTimeout(() => setVisible(true), 120)
+    const t = setTimeout(() => setMounted(true), 80)
     return () => clearTimeout(t)
   }, [])
 
+  // Parallax fade and upward shift as user begins scrolling
+  const progress = Math.min(Math.max((scrollY || 0) / 450, 0), 1)
+  const heroOpacity = 1 - progress * 0.95
+  const heroTranslate = -progress * 70
+  const heroScale = 1 - progress * 0.05
+  const heroBlur = progress * 6
+
   return (
     <section
-      ref={heroRef}
       id="hero"
-      aria-label="Hero — Chitraksh Jain"
+      aria-label="Chitraksh Jain — Video Editor"
       style={{
         position: 'relative',
         minHeight: '100vh',
@@ -24,77 +34,64 @@ export default function Hero() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        padding: '7rem 1.5rem 4rem',
         overflow: 'hidden',
-        padding: '0 1.5rem',
+        zIndex: 2,
       }}
     >
-      {/* Animated radial background */}
-      <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-        {/* Dark graphite orb 1 */}
-        <div style={{
-          position: 'absolute',
-          top: '-20%',
-          left: '-15%',
-          width: '70vw',
-          height: '70vw',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(30,30,30,0.7) 0%, transparent 70%)',
-          animation: 'breathe 18s ease-in-out infinite',
-        }} />
-        {/* Muted red accent glow */}
-        <div style={{
-          position: 'absolute',
-          bottom: '10%',
-          right: '-10%',
-          width: '50vw',
-          height: '50vw',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(192,57,43,0.06) 0%, transparent 70%)',
-          animation: 'breathe2 22s ease-in-out infinite',
-        }} />
-        {/* Grey center orb */}
-        <div style={{
-          position: 'absolute',
-          top: '30%',
-          left: '30%',
-          width: '40vw',
-          height: '40vw',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(20,20,20,0.5) 0%, transparent 70%)',
-          animation: 'breathe 26s ease-in-out infinite reverse',
-        }} />
-      </div>
-
-      {/* Content */}
-      <div style={{
-        position: 'relative',
-        zIndex: 1,
-        textAlign: 'center',
-        maxWidth: '900px',
-        width: '100%',
-      }}>
-        {/* Role label */}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '920px',
+          textAlign: 'center',
+          transform: `translateY(${heroTranslate}px) scale(${heroScale})`,
+          opacity: heroOpacity,
+          filter: `blur(${heroBlur}px)`,
+          transition: 'transform 0.08s linear, opacity 0.08s linear, filter 0.08s linear',
+          willChange: 'transform, opacity, filter',
+        }}
+      >
+        {/* Role Pill */}
         <div
-          className={visible ? 'animate-fade-up delay-100' : ''}
-          style={{ opacity: visible ? undefined : 0 }}
+          className={mounted ? 'anim-editorial-reveal anim-delay-1' : ''}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.4rem 1.1rem',
+            borderRadius: 'var(--radius-pill)',
+            background: 'rgba(255, 255, 255, 0.035)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backdropFilter: 'blur(16px)',
+            marginBottom: '1.75rem',
+          }}
         >
-          <span className="label" style={{ color: 'var(--accent)', letterSpacing: '0.22em' }}>
-            Video Editor
+          <span
+            style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              background: 'var(--accent-red-bright)',
+              boxShadow: '0 0 8px var(--accent-red-bright)',
+              animation: 'statusDotBlink 2.4s ease-in-out infinite',
+            }}
+          />
+          <span className="label-editorial" style={{ color: 'var(--text-primary)', letterSpacing: '0.22em' }}>
+            Video Editor &amp; Motion Designer
           </span>
         </div>
 
-        {/* Name */}
-        <div
-          className={visible ? 'animate-fade-up delay-200' : ''}
-          style={{ opacity: visible ? undefined : 0, marginTop: '1rem' }}
-        >
+        {/* Name Display */}
+        <div className={mounted ? 'anim-editorial-reveal anim-delay-2' : ''}>
           <h1
-            className="display"
+            className="heading-display"
             style={{
-              background: 'linear-gradient(135deg, #e8e8e8 40%, #888 100%)',
+              background: 'linear-gradient(180deg, #FFFFFF 30%, #8A92A6 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
+              textShadow: '0 10px 40px rgba(0,0,0,0.6)',
+              marginBottom: '1.5rem',
             }}
           >
             CHITRAKSH
@@ -103,65 +100,64 @@ export default function Hero() {
           </h1>
         </div>
 
-        {/* Divider line */}
+        {/* Editorial Subtitle */}
         <div
-          className={visible ? 'animate-fade-in delay-400' : ''}
-          style={{
-            opacity: visible ? undefined : 0,
-            width: '40px',
-            height: '1px',
-            background: 'var(--accent)',
-            margin: '2rem auto',
-          }}
-        />
-
-        {/* Description */}
-        <div
-          className={visible ? 'animate-fade-up delay-500' : ''}
-          style={{ opacity: visible ? undefined : 0 }}
+          className={mounted ? 'anim-editorial-reveal anim-delay-3' : ''}
+          style={{ maxWidth: '580px', margin: '0 auto 2.25rem' }}
         >
-          <p style={{
-            fontFamily: 'var(--font)',
-            fontWeight: 300,
-            fontSize: 'clamp(1rem, 1.5vw, 1.2rem)',
-            color: 'var(--text-muted)',
-            lineHeight: 1.75,
-            maxWidth: '520px',
-            margin: '0 auto',
-          }}>
-            Turning raw footage into compelling visual stories.<br />
-            <span style={{ color: 'rgba(232,232,232,0.55)' }}>
+          <p
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontSize: 'clamp(1.05rem, 1.6vw, 1.28rem)',
+              fontWeight: 400,
+              color: 'var(--text-secondary)',
+              lineHeight: 1.65,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Turning raw footage into compelling visual stories.
+            <br />
+            <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
               50+ reels edited across social, brand and creative content.
             </span>
           </p>
         </div>
 
-        {/* Skills */}
+        {/* Skills Tagline */}
         <div
-          className={visible ? 'animate-fade-up delay-600' : ''}
+          className={mounted ? 'anim-editorial-reveal anim-delay-4' : ''}
           style={{
-            opacity: visible ? undefined : 0,
             display: 'flex',
             flexWrap: 'wrap',
-            gap: '0.6rem',
             justifyContent: 'center',
-            marginTop: '2rem',
+            gap: '0.65rem',
           }}
         >
-          {SKILLS.map((skill, i) => (
+          {SKILLS.map((skill) => (
             <span
               key={skill}
               style={{
-                fontFamily: 'var(--font)',
-                fontWeight: 500,
-                fontSize: '0.6rem',
-                letterSpacing: '0.14em',
+                fontFamily: 'var(--font-editorial)',
+                fontSize: '0.68rem',
+                fontWeight: 600,
+                letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: 'var(--text-muted)',
-                padding: '0.35rem 0.8rem',
-                border: '1px solid rgba(255,255,255,0.07)',
-                borderRadius: '100px',
-                background: 'rgba(255,255,255,0.03)',
+                padding: '0.45rem 1rem',
+                borderRadius: 'var(--radius-pill)',
+                background: 'rgba(255, 255, 255, 0.02)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--text-primary)'
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)'
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--text-muted)'
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)'
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'
               }}
             >
               {skill}
@@ -170,11 +166,10 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll to explore hint */}
       <div
-        className={visible ? 'animate-fade-in delay-800' : ''}
+        className={mounted ? 'anim-editorial-reveal anim-delay-5' : ''}
         style={{
-          opacity: visible ? undefined : 0,
           position: 'absolute',
           bottom: '2.5rem',
           left: '50%',
@@ -182,24 +177,35 @@ export default function Hero() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '0.5rem',
-          animation: 'pulseDown 2.4s ease-in-out infinite',
+          gap: '0.6rem',
+          opacity: Math.max(0, 1 - progress * 3),
+          transition: 'opacity 0.2s',
+          pointerEvents: 'none',
         }}
-        aria-hidden="true"
       >
-        <span style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 500,
-          fontSize: '0.55rem',
-          letterSpacing: '0.22em',
-          textTransform: 'uppercase',
-          color: 'var(--text-dim)',
-        }}>
+        <span
+          style={{
+            fontFamily: 'var(--font-editorial)',
+            fontSize: '0.58rem',
+            fontWeight: 700,
+            letterSpacing: '0.24em',
+            textTransform: 'uppercase',
+            color: 'var(--text-muted)',
+          }}
+        >
           Scroll to explore
         </span>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M8 3v10M4 9l4 4 4-4" stroke="rgba(107,107,107,0.6)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <div style={{ animation: 'scrollIndicatorPulse 2.4s ease-in-out infinite' }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 4V18M12 18L6 12M12 18L18 12"
+              stroke="var(--text-muted)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
       </div>
     </section>
   )

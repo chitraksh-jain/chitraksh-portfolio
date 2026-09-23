@@ -2,16 +2,15 @@
  * ============================================================
  * PROJECTS CONFIGURATION — CHITRAKSH JAIN PORTFOLIO
  * ============================================================
- * To update media: edit videoUrl / posterUrl in each object.
- * Drop real video files in /public/media/ and reference as:
- *   videoUrl: "/media/your-reel.mp4"
- *   posterUrl: "/media/your-poster.jpg"
- * Do NOT touch any component or animation files.
+ * Single source of truth for all video & poster assets.
+ * To use real files: place .mp4 and .jpg files in /public/media/
+ * and update the videoUrl & posterUrl paths below.
+ * No animation or layout code needs to be modified.
  * ============================================================
  */
 
-// Free royalty-free placeholder videos (Big Buck Bunny / Tears of Steel clips)
-const SAMPLE_VERTICAL =
+// High-reliability royalty-free video clips (Google Cloud / Wikimedia / CDN)
+const SAMPLE_VERTICAL_1 =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
 const SAMPLE_VERTICAL_2 =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4";
@@ -21,7 +20,8 @@ const SAMPLE_VERTICAL_4 =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4";
 const SAMPLE_VERTICAL_5 =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4";
-const SAMPLE_WIDE =
+
+const SAMPLE_WIDE_1 =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 const SAMPLE_WIDE_2 =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
@@ -29,186 +29,205 @@ const SAMPLE_WIDE_3 =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4";
 
 // ——————————————————————————————————————————————————————————
-// SHOWREEL
+// 1. SHOWREEL (16:9 Cinematic Video)
 // ——————————————————————————————————————————————————————————
 export const showreel = {
-  videoUrl: SAMPLE_WIDE,
-  posterUrl: "",
-  title: "Showreel 2024",
+  videoUrl: SAMPLE_WIDE_1,
+  posterUrl:
+    "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1600&q=85",
+  title: "Showreel 2024 — Selected Works",
+  subtitle: "Commercial / Reels / Narrative",
+  year: "2024",
 };
 
 // ——————————————————————————————————————————————————————————
-// HORIZONTAL REEL PROJECTS  (9:16 vertical cards)
-// Add / remove items freely — the gallery adapts automatically.
+// 2. HORIZONTAL REEL PROJECTS (9:16 Portrait Cards)
+// Dynamic data-driven array — add or remove projects freely.
 // ——————————————————————————————————————————————————————————
 export const reelProjects = [
   {
     id: 1,
     index: "01",
-    title: "Social Reel 01",
+    title: "Apex Podcast Series",
     category: "SOCIAL MEDIA",
     categoryLabel: "Talking Heads / Reels / Podcasts",
     description:
-      "Fast-paced talking-head edit crafted for brand growth and maximum watch time.",
-    videoUrl: SAMPLE_VERTICAL,
-    posterUrl: "",
-    tools: ["Premiere Pro"],
+      "High-retention talking-head reel with kinetic title cards, multicam cuts, and micro-zooms.",
+    videoUrl: SAMPLE_VERTICAL_1,
+    posterUrl:
+      "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=800&q=85",
+    tools: ["Premiere Pro", "After Effects"],
     duration: "0:30",
   },
   {
     id: 2,
     index: "02",
-    title: "Social Reel 02",
+    title: "Creator Flow Reel",
     category: "SOCIAL MEDIA",
     categoryLabel: "Talking Heads / Reels / Podcasts",
     description:
-      "High-retention short-form content optimised for Instagram Reels and TikTok.",
+      "Fast-paced short-form breakdown engineered for Instagram Reels and viral TikTok engagement.",
     videoUrl: SAMPLE_VERTICAL_2,
-    posterUrl: "",
-    tools: ["Premiere Pro", "After Effects"],
+    posterUrl:
+      "https://images.unsplash.com/photo-1598550874175-4d0ef436c909?auto=format&fit=crop&w=800&q=85",
+    tools: ["Premiere Pro"],
     duration: "0:28",
   },
   {
     id: 3,
     index: "03",
-    title: "Performance Ad 01",
+    title: "Velocity Sneaker Launch",
     category: "ADS & UGC",
     categoryLabel: "Performance Creatives / Product Ads",
     description:
-      "Direct-response UGC-style ad engineered for ROAS-positive social campaigns.",
+      "Direct-response performance creative combining UGC hook pacing with commercial color treatment.",
     videoUrl: SAMPLE_VERTICAL_3,
-    posterUrl: "",
-    tools: ["Premiere Pro"],
+    posterUrl:
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=85",
+    tools: ["Premiere Pro", "After Effects"],
     duration: "0:45",
   },
   {
     id: 4,
     index: "04",
-    title: "Kinetic Type 01",
+    title: "Kinetic Typography Spec",
     category: "MOTION GRAPHICS",
     categoryLabel: "Kinetic Typography / Explainers / VFX",
     description:
-      "Bold kinetic typography experiment pushing editorial motion aesthetics.",
+      "Experimental typographic title sequence exploring fluid weight interpolation and rhythmic cuts.",
     videoUrl: SAMPLE_VERTICAL_4,
-    posterUrl: "",
+    posterUrl:
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=85",
     tools: ["After Effects"],
     duration: "0:40",
   },
   {
     id: 5,
     index: "05",
-    title: "Explainer Animation",
+    title: "Neural Core Explainer",
     category: "MOTION GRAPHICS",
     categoryLabel: "Kinetic Typography / Explainers / VFX",
     description:
-      "Clean explainer animation translating complex ideas into visual clarity.",
+      "3D vector motion explainer translating complex AI architecture into sleek visual clarity.",
     videoUrl: SAMPLE_VERTICAL_5,
-    posterUrl: "",
+    posterUrl:
+      "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=800&q=85",
     tools: ["After Effects", "Premiere Pro"],
     duration: "1:10",
   },
   {
     id: 6,
     index: "06",
-    title: "SaaS Product Demo",
+    title: "Chronos SaaS Platform",
     category: "SAAS & PRODUCT",
     categoryLabel: "UI Animations / Product Demos",
     description:
-      "Polished UI walkthrough elevating a SaaS product launch with motion-first storytelling.",
-    videoUrl: SAMPLE_VERTICAL,
-    posterUrl: "",
+      "Polished UI animation showcasing product workflows with simulated 3D camera pan and glass overlays.",
+    videoUrl: SAMPLE_VERTICAL_1,
+    posterUrl:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=85",
     tools: ["After Effects", "Premiere Pro"],
     duration: "1:30",
   },
   {
     id: 7,
     index: "07",
-    title: "App Promo",
+    title: "Horizon App Showcase",
     category: "SAAS & PRODUCT",
     categoryLabel: "UI Animations / Product Demos",
     description:
-      "Sleek app promo combining screen recording with cinematic overlays and motion type.",
+      "Sleek mobile app walkthrough combining device tilt physics with synchronized motion typography.",
     videoUrl: SAMPLE_VERTICAL_2,
-    posterUrl: "",
+    posterUrl:
+      "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=85",
     tools: ["After Effects"],
     duration: "0:55",
   },
   {
     id: 8,
     index: "08",
-    title: "Brand Story",
+    title: "Atelier Brand Film",
     category: "BRAND CONTENT",
     categoryLabel: "Corporate / Promotional / Lifestyle",
     description:
-      "Emotional brand narrative weaving lifestyle footage with purposeful pacing.",
+      "Emotional founder documentary weaving intimate interview dialogue with purposeful b-roll pacing.",
     videoUrl: SAMPLE_VERTICAL_3,
-    posterUrl: "",
-    tools: ["Premiere Pro", "After Effects"],
+    posterUrl:
+      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=85",
+    tools: ["Premiere Pro", "Lumetri"],
     duration: "2:00",
   },
   {
     id: 9,
     index: "09",
-    title: "Travel Cinematic",
+    title: "Nordic Solitude",
     category: "CINEMATIC",
     categoryLabel: "Travel / Events / Fashion / Fitness",
     description:
-      "Cinematic travel edit harnessing natural light and seamless colour grading.",
+      "Cinematic anamorphic travel sequence featuring natural light transitions and rich film emulation.",
     videoUrl: SAMPLE_VERTICAL_4,
-    posterUrl: "",
+    posterUrl:
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=85",
     tools: ["Premiere Pro", "Lumetri"],
     duration: "3:00",
   },
   {
     id: 10,
     index: "10",
-    title: "Fashion Film",
+    title: "Monochrome Editorial",
     category: "CINEMATIC",
     categoryLabel: "Travel / Events / Fashion / Fitness",
     description:
-      "High-fashion editorial sequence built on precise rhythm and visual contrast.",
+      "High-fashion campaign edit built on razor-sharp rhythm, visual contrast, and sound design.",
     videoUrl: SAMPLE_VERTICAL_5,
-    posterUrl: "",
+    posterUrl:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85",
     tools: ["Premiere Pro", "After Effects"],
     duration: "1:45",
   },
 ];
 
 // ——————————————————————————————————————————————————————————
-// LONG-FORM / YOUTUBE PROJECTS  (16:9)
+// 3. LONG-FORM / YOUTUBE PROJECTS (16:9 Cinematic Video)
 // ——————————————————————————————————————————————————————————
 export const longFormProjects = [
   {
     id: 101,
     title: "Creative Process Behind My Edits",
-    category: "YOUTUBE / EDITING BREAKDOWN",
+    category: "YOUTUBE / BREAKDOWN",
     description:
-      "A behind-the-scenes look at how I transform raw footage into polished narratives — covering colour, pacing and sound design.",
-    videoUrl: SAMPLE_WIDE,
-    posterUrl: "",
+      "A deep-dive behind the timeline: breaking down pacing, sound design layering, and color grading workflows that keep watch-time above 70%.",
+    videoUrl: SAMPLE_WIDE_1,
+    posterUrl:
+      "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1200&q=85",
     tools: ["Premiere Pro", "After Effects"],
     duration: "12:40",
+    views: "24K views",
   },
   {
     id: 102,
-    title: "Podcast Production — Full Episode",
+    title: "Studio Podcast Production",
     category: "PODCAST / LONG-FORM",
     description:
-      "End-to-end podcast edit with dynamic text overlays, chapter markers and branded motion graphics.",
+      "End-to-end multi-cam edit featuring custom animated lower thirds, chapter cards, and audio mastering for broadcast clarity.",
     videoUrl: SAMPLE_WIDE_2,
-    posterUrl: "",
+    posterUrl:
+      "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&w=1200&q=85",
     tools: ["Premiere Pro"],
     duration: "45:00",
+    views: "18K views",
   },
   {
     id: 103,
-    title: "Brand Documentary",
-    category: "BRAND CONTENT / STORYTELLING",
+    title: "Founders & Vision — Documentary",
+    category: "BRAND DOCUMENTARY",
     description:
-      "Founder story documentary combining handheld interviews with b-roll and original score composition.",
+      "Long-form documentary combining archival b-roll, original score timing, and nuanced pacing to convey the human story behind the brand.",
     videoUrl: SAMPLE_WIDE_3,
-    posterUrl: "",
-    tools: ["Premiere Pro", "After Effects", "Lumetri"],
+    posterUrl:
+      "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=85",
+    tools: ["Premiere Pro", "Lumetri Color"],
     duration: "8:20",
+    views: "31K views",
   },
 ];

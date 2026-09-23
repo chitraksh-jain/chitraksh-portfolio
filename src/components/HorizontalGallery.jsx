@@ -1,90 +1,53 @@
-import React, { useRef, useState, useEffect, useLayoutEffect } from 'react'
+import React from 'react'
 import { reelProjects } from '../data/projects'
 import { useScrollGallery } from '../hooks/useScrollGallery'
 import VideoCard from './VideoCard'
 import ProjectInfo from './ProjectInfo'
+import { Film } from 'lucide-react'
 
-const CARD_WIDTH = 300
-const CARD_GAP = 36
-// Extra scroll height per card (controls how much vertical scroll = one card)
-const SCROLL_MULTIPLIER = 260
+// Vertical scroll distance per project card
+const SCROLL_PER_CARD = 320
 
 export default function HorizontalGallery() {
-  const { wrapperRef, stickyRef, trackRef, activeIndex, progress } = useScrollGallery(reelProjects.length)
-  const [containerWidth, setContainerWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1440)
-  const [trackX, setTrackX] = useState(containerWidth / 2 - CARD_WIDTH / 2)
-  const [sectionVisible, setSectionVisible] = useState(false)
-  const animFrameRef = useRef(null)
+  const {
+    wrapperRef,
+    stickyRef,
+    trackRef,
+    activeIndex,
+    stageAlignment,
+    stageExit,
+    currentTranslateX,
+    viewportWidth,
+    CARD_WIDTH,
+    CARD_GAP,
+  } = useScrollGallery(reelProjects.length)
 
-  useEffect(() => {
-    const update = () => setContainerWidth(window.innerWidth)
-    window.addEventListener('resize', update, { passive: true })
-    return () => window.removeEventListener('resize', update)
-  }, [])
+  // Total wrapper height creates the vertical scrolling travel distance
+  const wrapperHeight = `calc(100vh + ${reelProjects.length * SCROLL_PER_CARD}px)`
 
-  // Mirror the trackRef transform for prop drilling to VideoCard
-  useEffect(() => {
-    let running = true
-    const read = () => {
-      if (!running) return
-      if (trackRef.current) {
-        const t = new DOMMatrix(getComputedStyle(trackRef.current).transform)
-        setTrackX(t.m41) // translateX
-      }
-      animFrameRef.current = requestAnimationFrame(read)
-    }
-    animFrameRef.current = requestAnimationFrame(read)
-    return () => { running = false; cancelAnimationFrame(animFrameRef.current) }
-  }, [trackRef])
-
-  // Observe section visibility for entrance animation
-  useEffect(() => {
-    const observer = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) setSectionVisible(true)
-    }, { threshold: 0.1 })
-    if (wrapperRef.current) observer.observe(wrapperRef.current)
-    return () => observer.disconnect()
-  }, [wrapperRef])
-
-  // Wrapper height = viewport height + (number of cards * scroll multiplier)
-  const wrapperHeight = `calc(100vh + ${reelProjects.length * SCROLL_MULTIPLIER}px)`
+  // Stage entrance and exit interpolation
+  const stageOpacity = Math.max(0, stageAlignment - stageExit * 0.4)
+  const stageScale = 0.94 + stageAlignment * 0.06 - stageExit * 0.04
+  const stageBlur = Math.max(0, (1 - stageAlignment) * 8 + stageExit * 6)
 
   return (
     <section
-      id="work"
-      aria-label="Horizontal video gallery"
+      id="gallery-stage"
+      aria-label="Horizontal Video Experience"
       style={{
         position: 'relative',
-        zIndex: 1,
+        zIndex: 3,
       }}
     >
-      {/* Section heading */}
-      <div style={{
-        textAlign: 'center',
-        padding: '5rem 1.5rem 3rem',
-        opacity: sectionVisible ? 1 : 0,
-        transform: sectionVisible ? 'translateY(0)' : 'translateY(24px)',
-        transition: 'opacity 0.8s ease, transform 0.8s ease',
-      }}>
-        <span className="label" style={{ color: 'var(--text-dim)' }}>Selected Work</span>
-        <h2 style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 800,
-          fontSize: 'clamp(2rem, 4vw, 4rem)',
-          letterSpacing: '-0.03em',
-          color: 'var(--text)',
-          marginTop: '0.75rem',
-        }}>
-          The Reel
-        </h2>
-      </div>
-
-      {/* Scroll-to-horizontal wrapper */}
+      {/* Outer scroll wrapper */}
       <div
         ref={wrapperRef}
-        style={{ height: wrapperHeight, position: 'relative' }}
+        style={{
+          height: wrapperHeight,
+          position: 'relative',
+        }}
       >
-        {/* Sticky container */}
+        {/* Fullscreen 100vh Sticky Stage Container */}
         <div
           ref={stickyRef}
           style={{
@@ -95,116 +58,178 @@ export default function HorizontalGallery() {
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
+            padding: '4.5rem 0 2rem',
+            opacity: stageOpacity,
+            transform: `scale(${stageScale})`,
+            filter: `blur(${stageBlur}px)`,
+            willChange: 'transform, opacity, filter',
+            transition: 'opacity 0.08s linear, transform 0.08s linear',
           }}
         >
-          {/* Subtle glow beneath track */}
-          <div aria-hidden="true" style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '60vw',
-            height: '60vh',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(192,57,43,0.04) 0%, transparent 70%)',
-            pointerEvents: 'none',
-          }} />
+          {/* Subtle Ambient Backlight Glow Focused on Center */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              top: '42%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '70vw',
+              height: '65vh',
+              background:
+                'radial-gradient(ellipse at center, rgba(192, 57, 43, 0.12) 0%, rgba(200, 215, 235, 0.04) 40%, transparent 75%)',
+              filter: 'blur(60px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
 
-          {/* Progress bar */}
-          <div aria-hidden="true" style={{
-            position: 'absolute',
-            bottom: '2.5rem',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '120px',
-            height: '2px',
-            background: 'rgba(255,255,255,0.08)',
-            borderRadius: '1px',
-          }}>
-            <div style={{
-              height: '100%',
-              width: `${progress * 100}%`,
-              background: 'var(--accent)',
-              borderRadius: '1px',
-              transition: 'width 0.05s linear',
-            }} />
+          {/* Top Stage Header */}
+          <div
+            style={{
+              textAlign: 'center',
+              zIndex: 1,
+              position: 'relative',
+              padding: '0 1.5rem',
+            }}
+          >
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem',
+                marginBottom: '0.35rem',
+              }}
+            >
+              <Film size={12} color="var(--accent-red-bright)" />
+              <span className="label-editorial" style={{ color: 'var(--text-muted)' }}>
+                Interactive Reel Experience
+              </span>
+            </div>
+            <h2
+              style={{
+                fontFamily: 'var(--font-editorial)',
+                fontWeight: 800,
+                fontSize: 'clamp(1.5rem, 2.4vw, 2.4rem)',
+                letterSpacing: '-0.025em',
+                color: 'var(--text-primary)',
+              }}
+            >
+              Selected Social &amp; Brand Reels
+            </h2>
           </div>
 
-          {/* Counter */}
-          <div aria-hidden="true" style={{
-            position: 'absolute',
-            bottom: '3.5rem',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            fontFamily: 'var(--font)',
-            fontWeight: 600,
-            fontSize: '0.55rem',
-            letterSpacing: '0.2em',
-            color: 'var(--text-dim)',
-          }}>
-            {String(activeIndex + 1).padStart(2, '0')} / {String(reelProjects.length).padStart(2, '0')}
-          </div>
-
-          {/* Video track */}
-          <div style={{
-            position: 'relative',
-            width: '100%',
-            height: `${534 * 1.45}px`, // max card height
-            display: 'flex',
-            alignItems: 'center',
-          }}>
+          {/* Middle: Horizontal Cards Track */}
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: `${Math.round(CARD_WIDTH * (16 / 9) * 1.45)}px`,
+              display: 'flex',
+              alignItems: 'center',
+              zIndex: 2,
+            }}
+          >
             <div
               ref={trackRef}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: `${CARD_GAP}px`,
                 position: 'absolute',
                 left: 0,
                 top: '50%',
-                transform: `translateX(${containerWidth / 2 - CARD_WIDTH / 2}px) translateY(-50%)`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: `${CARD_GAP}px`,
+                transform: `translateX(${currentTranslateX}px) translateY(-50%)`,
                 willChange: 'transform',
               }}
             >
-              {reelProjects.map((project, i) => (
+              {reelProjects.map((project, idx) => (
                 <VideoCard
                   key={project.id}
                   project={project}
-                  index={i}
+                  index={idx}
                   activeIndex={activeIndex}
-                  trackX={trackX}
-                  containerWidth={containerWidth}
+                  currentTranslateX={currentTranslateX}
+                  viewportWidth={viewportWidth}
+                  CARD_WIDTH={CARD_WIDTH}
+                  CARD_GAP={CARD_GAP}
                 />
               ))}
             </div>
           </div>
 
-          {/* Project info below track */}
-          <div style={{
-            position: 'absolute',
-            bottom: '5rem',
-            left: 0,
-            right: 0,
-          }}>
+          {/* Bottom Area: Coupled Project Info & Progress Indicator */}
+          <div
+            style={{
+              zIndex: 3,
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '1rem',
+            }}
+          >
+            {/* Dynamic Editorial Metadata */}
             <ProjectInfo project={reelProjects[activeIndex]} />
-          </div>
 
-          {/* Swipe/scroll hint */}
-          <div style={{
-            position: 'absolute',
-            top: '1.5rem',
-            right: '2rem',
-            fontFamily: 'var(--font)',
-            fontWeight: 500,
-            fontSize: '0.55rem',
-            letterSpacing: '0.18em',
-            textTransform: 'uppercase',
-            color: 'var(--text-dim)',
-            opacity: 0.5,
-          }}>
-            Scroll ↓ to navigate
+            {/* Subtle Progress Bar & Counter */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1.25rem',
+                marginTop: '0.25rem',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--font-editorial)',
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  color: 'var(--accent-red-bright)',
+                }}
+              >
+                {String(activeIndex + 1).padStart(2, '0')}
+              </span>
+
+              {/* Progress Line */}
+              <div
+                style={{
+                  width: '120px',
+                  height: '2px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: '1px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    height: '100%',
+                    width: `${((activeIndex + 1) / reelProjects.length) * 100}%`,
+                    background: 'var(--accent-red-bright)',
+                    transition: 'width 0.25s ease',
+                  }}
+                />
+              </div>
+
+              <span
+                style={{
+                  fontFamily: 'var(--font-editorial)',
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                {String(reelProjects.length).padStart(2, '0')}
+              </span>
+            </div>
           </div>
         </div>
       </div>

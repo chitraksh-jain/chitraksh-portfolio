@@ -1,120 +1,180 @@
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
 
-export default function Navbar({ scrolled }) {
-  const navRef = useRef(null)
-
-  const scrollToContact = () => {
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+export default function Navbar({ scrolled, onNavigate }) {
+  const handleNavClick = (e, targetId) => {
+    e.preventDefault()
+    if (onNavigate) {
+      onNavigate(targetId)
+    } else {
+      const el = document.getElementById(targetId)
+      if (el) el.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 
   return (
-    <nav
-      ref={navRef}
-      aria-label="Primary navigation"
+    <header
+      aria-label="Navigation header"
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
-        zIndex: 1000,
+        zIndex: 100,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '1.25rem 2.5rem',
-        background: scrolled
-          ? 'rgba(8,8,8,0.85)'
-          : 'transparent',
-        backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.04)' : '1px solid transparent',
-        transition: 'background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease',
+        padding: scrolled ? '1rem 2.5rem' : '1.5rem 2.5rem',
+        transition: 'all 0.4s var(--ease-cinematic)',
+        background: scrolled ? 'rgba(8, 9, 11, 0.72)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(24px) saturate(140%)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'blur(24px) saturate(140%)' : 'none',
+        borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.06)' : '1px solid transparent',
       }}
     >
-      {/* Logo */}
+      {/* Brand Mark */}
       <a
         href="#"
+        onClick={(e) => handleNavClick(e, 'hero')}
         aria-label="Chitraksh Jain — home"
         style={{
           display: 'flex',
-          flexDirection: 'column',
-          gap: '1px',
+          alignItems: 'center',
+          gap: '0.85rem',
           textDecoration: 'none',
         }}
-        onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
       >
-        <span style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 800,
-          fontSize: '1.1rem',
-          letterSpacing: '-0.02em',
-          color: 'var(--text)',
-          lineHeight: 1,
-        }}>
-          CJ
-        </span>
-        <span style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 400,
-          fontSize: '0.55rem',
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: 'var(--text-muted)',
-          lineHeight: 1,
-        }}>
-          Chitraksh Jain
-        </span>
+        <div
+          style={{
+            width: '34px',
+            height: '34px',
+            borderRadius: '10px',
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              letterSpacing: '-0.02em',
+              color: 'var(--text-primary)',
+            }}
+          >
+            CJ
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              letterSpacing: '-0.01em',
+              color: 'var(--text-primary)',
+              lineHeight: 1.1,
+            }}
+          >
+            CHITRAKSH JAIN
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontWeight: 500,
+              fontSize: '0.55rem',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--accent-red-bright)',
+              lineHeight: 1,
+            }}
+          >
+            Video Editor
+          </span>
+        </div>
       </a>
 
-      {/* Right actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+      {/* Nav Actions */}
+      <nav style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }}>
         <button
-          onClick={() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' })}
+          onClick={(e) => handleNavClick(e, 'showreel')}
           style={{
-            fontFamily: 'var(--font)',
-            fontWeight: 500,
+            fontFamily: 'var(--font-editorial)',
+            fontWeight: 600,
             fontSize: '0.65rem',
-            letterSpacing: '0.15em',
+            letterSpacing: '0.16em',
             textTransform: 'uppercase',
-            color: 'var(--text-muted)',
+            color: 'var(--text-secondary)',
             cursor: 'pointer',
-            transition: 'color 0.2s',
             background: 'none',
             border: 'none',
+            transition: 'color 0.25s',
+            padding: '0.4rem 0.2rem',
           }}
-          onMouseEnter={e => (e.target.style.color = 'var(--text)')}
-          onMouseLeave={e => (e.target.style.color = 'var(--text-muted)')}
+          onMouseEnter={(e) => (e.target.style.color = 'var(--text-primary)')}
+          onMouseLeave={(e) => (e.target.style.color = 'var(--text-secondary)')}
+        >
+          Showreel
+        </button>
+
+        <button
+          onClick={(e) => handleNavClick(e, 'gallery-stage')}
+          style={{
+            fontFamily: 'var(--font-editorial)',
+            fontWeight: 600,
+            fontSize: '0.65rem',
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            color: 'var(--text-secondary)',
+            cursor: 'pointer',
+            background: 'none',
+            border: 'none',
+            transition: 'color 0.25s',
+            padding: '0.4rem 0.2rem',
+          }}
+          onMouseEnter={(e) => (e.target.style.color = 'var(--text-primary)')}
+          onMouseLeave={(e) => (e.target.style.color = 'var(--text-secondary)')}
         >
           Work
         </button>
+
         <button
-          onClick={scrollToContact}
-          aria-label="Contact Chitraksh"
+          onClick={(e) => handleNavClick(e, 'longform')}
           style={{
-            fontFamily: 'var(--font)',
+            fontFamily: 'var(--font-editorial)',
             fontWeight: 600,
             fontSize: '0.65rem',
-            letterSpacing: '0.15em',
+            letterSpacing: '0.16em',
             textTransform: 'uppercase',
-            color: 'var(--text)',
+            color: 'var(--text-secondary)',
             cursor: 'pointer',
-            padding: '0.45rem 1rem',
-            border: '1px solid rgba(255,255,255,0.12)',
-            borderRadius: '100px',
-            background: 'rgba(255,255,255,0.04)',
-            backdropFilter: 'blur(8px)',
-            transition: 'border-color 0.2s, background 0.2s',
+            background: 'none',
+            border: 'none',
+            transition: 'color 0.25s',
+            padding: '0.4rem 0.2rem',
           }}
-          onMouseEnter={e => {
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'
-            e.currentTarget.style.background = 'rgba(255,255,255,0.07)'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
-            e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+          onMouseEnter={(e) => (e.target.style.color = 'var(--text-primary)')}
+          onMouseLeave={(e) => (e.target.style.color = 'var(--text-secondary)')}
+        >
+          Long-Form
+        </button>
+
+        <button
+          onClick={(e) => handleNavClick(e, 'contact')}
+          className="glass-btn"
+          style={{
+            padding: '0.55rem 1.25rem',
+            fontSize: '0.65rem',
+            borderRadius: 'var(--radius-pill)',
           }}
         >
           Contact
         </button>
-      </div>
-    </nav>
+      </nav>
+    </header>
   )
 }

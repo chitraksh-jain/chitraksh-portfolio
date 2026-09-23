@@ -1,357 +1,465 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { longFormProjects } from '../data/projects'
-import { Play, Pause, Volume2, VolumeX, Maximize } from 'lucide-react'
+import { Play, Pause, Volume2, VolumeX, Maximize, Clock, Eye } from 'lucide-react'
 
-function LongFormCard({ project, index }) {
+function LongFormCard({ project, isFeatured }) {
   const videoRef = useRef(null)
-  const sectionRef = useRef(null)
-  const [visible, setVisible] = useState(false)
+  const cardRef = useRef(null)
+  const [inView, setInView] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(true)
   const [hovered, setHovered] = useState(false)
   const [progress, setProgress] = useState(0)
 
+  // Pause when out of view and trigger entrance
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) setVisible(true)
-        else {
-          // Pause when scrolled out
-          if (videoRef.current && !videoRef.current.paused) {
-            videoRef.current.pause()
-          }
+        setInView(entry.isIntersecting)
+        if (!entry.isIntersecting && videoRef.current && !videoRef.current.paused) {
+          videoRef.current.pause()
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.15 }
     )
-    if (sectionRef.current) observer.observe(sectionRef.current)
+    if (cardRef.current) observer.observe(cardRef.current)
     return () => observer.disconnect()
   }, [])
 
   useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    const onTimeUpdate = () => {
-      if (v.duration) setProgress((v.currentTime / v.duration) * 100)
+    const video = videoRef.current
+    if (!video) return
+
+    const handleTimeUpdate = () => {
+      if (video.duration) {
+        setProgress((video.currentTime / video.duration) * 100)
+      }
     }
-    const onPlay = () => setPlaying(true)
-    const onPause = () => setPlaying(false)
-    v.addEventListener('timeupdate', onTimeUpdate)
-    v.addEventListener('play', onPlay)
-    v.addEventListener('pause', onPause)
+    const handlePlay = () => setPlaying(true)
+    const handlePause = () => setPlaying(false)
+
+    video.addEventListener('timeupdate', handleTimeUpdate)
+    video.addEventListener('play', handlePlay)
+    video.addEventListener('pause', handlePause)
+
     return () => {
-      v.removeEventListener('timeupdate', onTimeUpdate)
-      v.removeEventListener('play', onPlay)
-      v.removeEventListener('pause', onPause)
+      video.removeEventListener('timeupdate', handleTimeUpdate)
+      video.removeEventListener('play', handlePlay)
+      video.removeEventListener('pause', handlePause)
     }
   }, [])
 
   const togglePlay = useCallback((e) => {
-    e?.stopPropagation?.()
-    const v = videoRef.current
-    if (!v) return
-    if (v.paused) v.play().catch(() => {})
-    else v.pause()
+    e?.stopPropagation()
+    const video = videoRef.current
+    if (!video) return
+    if (video.paused) {
+      video.play().catch(() => {})
+    } else {
+      video.pause()
+    }
   }, [])
 
   const toggleMute = useCallback((e) => {
-    e?.stopPropagation?.()
-    const v = videoRef.current
-    if (!v) return
-    v.muted = !v.muted
-    setMuted(v.muted)
+    e?.stopPropagation()
+    const video = videoRef.current
+    if (!video) return
+    video.muted = !video.muted
+    setMuted(video.muted)
   }, [])
 
   const handleFullscreen = useCallback((e) => {
-    e?.stopPropagation?.()
-    const v = videoRef.current
-    if (v?.requestFullscreen) v.requestFullscreen().catch(() => {})
+    e?.stopPropagation()
+    const video = videoRef.current
+    if (video?.requestFullscreen) video.requestFullscreen().catch(() => {})
   }, [])
-
-  const isFirst = index === 0
-  const delay = index * 0.15
 
   return (
     <div
-      ref={sectionRef}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0) scale(1)' : 'translateY(32px) scale(0.98)',
-        transition: `opacity 0.9s ease ${delay}s, transform 0.9s var(--transition-slow) ${delay}s`,
-        position: 'relative',
-        borderRadius: 'var(--radius)',
-        overflow: 'hidden',
-        cursor: 'pointer',
-        flex: isFirst ? '1 1 100%' : '1 1 calc(50% - 0.75rem)',
-        minWidth: isFirst ? '100%' : '280px',
-        aspectRatio: '16/9',
-        background: '#0a0a0a',
-        border: '1px solid rgba(255,255,255,0.05)',
-        boxShadow: '0 24px 80px rgba(0,0,0,0.7)',
-      }}
+      ref={cardRef}
+      onClick={togglePlay}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={togglePlay}
+      style={{
+        position: 'relative',
+        width: '100%',
+        aspectRatio: '16/9',
+        borderRadius: 'var(--radius-lg)',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        background: 'var(--bg-card)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: hovered
+          ? '0 30px 80px -15px rgba(0, 0, 0, 0.95), 0 0 35px rgba(192, 57, 43, 0.15)'
+          : '0 20px 50px -10px rgba(0, 0, 0, 0.75)',
+        transform: hovered
+          ? 'scale(1.02) translateY(-4px)'
+          : inView
+          ? 'scale(1) translateY(0)'
+          : 'scale(0.96) translateY(24px)',
+        opacity: inView ? 1 : 0.4,
+        filter: inView ? 'blur(0)' : 'blur(8px)',
+        transition: 'all 0.6s var(--ease-cinematic)',
+      }}
     >
+      {/* Top Hairline Reflection */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '1px',
+          background:
+            'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.22) 50%, transparent 100%)',
+          zIndex: 3,
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Video Element */}
       <video
         ref={videoRef}
         src={project.videoUrl}
-        poster={project.posterUrl || undefined}
-        preload="metadata"
-        muted
+        poster={project.posterUrl}
+        muted={muted}
         playsInline
+        preload="metadata"
         style={{
           width: '100%',
           height: '100%',
           objectFit: 'cover',
           display: 'block',
-          transform: hovered ? 'scale(1.03)' : 'scale(1)',
-          transition: 'transform 0.5s var(--transition-slow)',
+          position: 'relative',
+          zIndex: 1,
         }}
         aria-label={project.title}
       />
 
-      {/* Hover/info overlay */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'linear-gradient(transparent 40%, rgba(0,0,0,0.9) 100%)',
-        opacity: hovered ? 1 : 0.6,
-        transition: 'opacity 0.4s ease',
-        pointerEvents: 'none',
-      }} />
+      {/* Poster Fallback (Guarantees zero black boxes!) */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: `url(${project.posterUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: 0,
+          display: playing ? 'none' : 'block',
+          opacity: playing ? 0 : 1,
+          transition: 'opacity 0.4s ease',
+        }}
+      />
 
-      {/* Title info */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        padding: '1.5rem',
-        transform: hovered ? 'translateY(0)' : 'translateY(4px)',
-        transition: 'transform 0.4s ease',
-      }}>
-        <span style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 600,
-          fontSize: '0.55rem',
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          color: 'var(--accent)',
-          opacity: 0.85,
-        }}>
-          {project.category}
-        </span>
-        <h3 style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 700,
-          fontSize: isFirst ? 'clamp(1.2rem, 2vw, 1.8rem)' : '1rem',
-          color: 'var(--text)',
-          letterSpacing: '-0.015em',
-          lineHeight: 1.2,
-          marginTop: '0.3rem',
-          marginBottom: '0.5rem',
-        }}>
-          {project.title}
-        </h3>
-        {hovered && (
-          <p style={{
-            fontFamily: 'var(--font)',
-            fontWeight: 300,
-            fontSize: '0.8rem',
-            color: 'rgba(232,232,232,0.6)',
-            lineHeight: 1.6,
-            animation: 'fadeIn 0.3s ease',
-          }}>
-            {project.description}
-          </p>
-        )}
-        {/* Progress bar */}
-        <div style={{
-          width: '100%',
-          height: '2px',
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: '1px',
-          marginTop: '0.75rem',
-          opacity: playing ? 1 : 0,
-          transition: 'opacity 0.3s',
-        }}>
-          <div style={{
-            height: '100%',
-            width: `${progress}%`,
-            background: 'var(--accent)',
-            borderRadius: '1px',
-            transition: 'width 0.1s linear',
-          }} />
+      {/* Gradient Darkening Overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'linear-gradient(to top, rgba(8, 9, 11, 0.95) 0%, rgba(8, 9, 11, 0.4) 50%, transparent 80%)',
+          zIndex: 2,
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* Duration & Views Badges */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '1.25rem',
+          left: '1.25rem',
+          right: '1.25rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          zIndex: 3,
+        }}
+      >
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            background: 'rgba(8, 9, 11, 0.75)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            padding: '0.3rem 0.7rem',
+            borderRadius: 'var(--radius-pill)',
+          }}
+        >
+          <Clock size={12} color="var(--accent-red-bright)" />
+          <span
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontSize: '0.62rem',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              letterSpacing: '0.05em',
+            }}
+          >
+            {project.duration}
+          </span>
         </div>
+
+        {project.views && (
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              background: 'rgba(8, 9, 11, 0.75)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              padding: '0.3rem 0.7rem',
+              borderRadius: 'var(--radius-pill)',
+            }}
+          >
+            <Eye size={12} color="var(--text-secondary)" />
+            <span
+              style={{
+                fontFamily: 'var(--font-editorial)',
+                fontSize: '0.62rem',
+                fontWeight: 600,
+                color: 'var(--text-secondary)',
+              }}
+            >
+              {project.views}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Play button centre */}
+      {/* Play/Pause Central Indicator on Hover or when Paused */}
       {(!playing || hovered) && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -60%)',
-          opacity: hovered ? 1 : 0.7,
-          transition: 'opacity 0.3s',
-        }}>
-          <div style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'rgba(255,255,255,0.1)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.15)',
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
-            {playing
-              ? <Pause size={20} color="#e8e8e8" />
-              : <Play size={20} color="#e8e8e8" fill="#e8e8e8" style={{ marginLeft: '3px' }} />
-            }
+            zIndex: 3,
+          }}
+        >
+          <div
+            style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '50%',
+              background: 'rgba(255, 255, 255, 0.08)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 16px 36px rgba(0, 0, 0, 0.7)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'transform 0.3s ease',
+              transform: hovered ? 'scale(1.1)' : 'scale(1)',
+            }}
+          >
+            {playing ? (
+              <Pause size={20} color="#FFFFFF" />
+            ) : (
+              <Play size={22} color="#FFFFFF" fill="#FFFFFF" style={{ marginLeft: '3px' }} />
+            )}
           </div>
         </div>
       )}
 
-      {/* Corner controls */}
+      {/* Bottom Editorial Content */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '1.75rem',
+          zIndex: 3,
+        }}
+      >
+        <span
+          className="label-editorial"
+          style={{
+            color: 'var(--accent-red-bright)',
+            display: 'block',
+            marginBottom: '0.35rem',
+          }}
+        >
+          {project.category}
+        </span>
+        <h3
+          style={{
+            fontFamily: 'var(--font-editorial)',
+            fontWeight: 800,
+            fontSize: isFeatured ? 'clamp(1.25rem, 2vw, 1.8rem)' : '1.15rem',
+            color: 'var(--text-primary)',
+            letterSpacing: '-0.02em',
+            lineHeight: 1.2,
+            marginBottom: '0.5rem',
+          }}
+        >
+          {project.title}
+        </h3>
+
+        {isFeatured && (
+          <p
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontSize: '0.85rem',
+              fontWeight: 400,
+              color: 'var(--text-secondary)',
+              lineHeight: 1.55,
+              maxWidth: '620px',
+              marginBottom: '0.85rem',
+            }}
+          >
+            {project.description}
+          </p>
+        )}
+
+        {/* Progress Bar (Visible when playing) */}
+        <div
+          style={{
+            width: '100%',
+            height: '2px',
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '1px',
+            overflow: 'hidden',
+            marginTop: '0.5rem',
+            opacity: playing ? 1 : 0,
+            transition: 'opacity 0.25s',
+          }}
+        >
+          <div
+            style={{
+              height: '100%',
+              width: `${progress}%`,
+              background: 'var(--accent-red-bright)',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Floating Glass Control Buttons on Hover */}
       {hovered && (
         <div
-          onClick={e => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
           style={{
             position: 'absolute',
-            top: '1rem',
-            right: '1rem',
+            bottom: '1.5rem',
+            right: '1.5rem',
             display: 'flex',
             gap: '0.5rem',
-            animation: 'fadeIn 0.2s ease',
+            zIndex: 4,
           }}
         >
           <button
             onClick={toggleMute}
             aria-label={muted ? 'Unmute' : 'Mute'}
             style={{
-              width: '36px',
-              height: '36px',
+              width: '38px',
+              height: '38px',
               borderRadius: '50%',
-              background: 'rgba(0,0,0,0.4)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(8, 9, 11, 0.75)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#e8e8e8',
+              color: '#FFFFFF',
               cursor: 'pointer',
             }}
           >
-            {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+            {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
           </button>
+
           <button
             onClick={handleFullscreen}
             aria-label="Fullscreen"
             style={{
-              width: '36px',
-              height: '36px',
+              width: '38px',
+              height: '38px',
               borderRadius: '50%',
-              background: 'rgba(0,0,0,0.4)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(8, 9, 11, 0.75)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#e8e8e8',
+              color: '#FFFFFF',
               cursor: 'pointer',
             }}
           >
-            <Maximize size={14} />
+            <Maximize size={15} />
           </button>
         </div>
       )}
-
-      {/* Duration badge */}
-      <div style={{
-        position: 'absolute',
-        top: '1rem',
-        left: '1rem',
-        fontFamily: 'var(--font)',
-        fontWeight: 500,
-        fontSize: '0.55rem',
-        letterSpacing: '0.1em',
-        color: 'rgba(255,255,255,0.55)',
-        background: 'rgba(0,0,0,0.4)',
-        backdropFilter: 'blur(8px)',
-        padding: '0.2rem 0.5rem',
-        borderRadius: '4px',
-        border: '1px solid rgba(255,255,255,0.06)',
-      }}>
-        {project.duration}
-      </div>
     </div>
   )
 }
 
 export default function LongForm() {
-  const sectionRef = useRef(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setVisible(true) },
-      { threshold: 0.1 }
-    )
-    if (sectionRef.current) observer.observe(sectionRef.current)
-    return () => observer.disconnect()
-  }, [])
+  const featured = longFormProjects[0]
+  const supporting = longFormProjects.slice(1)
 
   return (
     <section
       id="longform"
-      ref={sectionRef}
-      aria-label="Long-form work"
+      aria-label="Long-Form Video Work"
       style={{
         padding: '8rem 1.5rem 6rem',
         maxWidth: '1200px',
         margin: '0 auto',
+        position: 'relative',
+        zIndex: 2,
       }}
     >
-      {/* Header */}
-      <div style={{
-        marginBottom: '3.5rem',
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(24px)',
-        transition: 'opacity 0.8s ease, transform 0.8s ease',
-      }}>
-        <span className="label" style={{ color: 'var(--text-dim)' }}>Long-Form Work</span>
-        <h2 style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 800,
-          fontSize: 'clamp(2rem, 4vw, 4rem)',
-          letterSpacing: '-0.03em',
-          color: 'var(--text)',
-          marginTop: '0.75rem',
-          marginBottom: '0.5rem',
-        }}>
-          YouTube &amp; Beyond
+      {/* Editorial Header */}
+      <div style={{ marginBottom: '3.5rem' }}>
+        <span className="label-editorial" style={{ color: 'var(--accent-red-bright)' }}>
+          Long-Form Storytelling
+        </span>
+        <h2
+          style={{
+            fontFamily: 'var(--font-editorial)',
+            fontWeight: 800,
+            fontSize: 'clamp(2.2rem, 4.5vw, 4.2rem)',
+            letterSpacing: '-0.03em',
+            color: 'var(--text-primary)',
+            marginTop: '0.5rem',
+            marginBottom: '0.6rem',
+          }}
+        >
+          YouTube &amp; Narrative Work
         </h2>
-        <p style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 300,
-          fontSize: 'clamp(0.85rem, 1.1vw, 1rem)',
-          color: 'var(--text-muted)',
-        }}>
-          YouTube Edits · Podcasts · Storytelling
+        <p
+          style={{
+            fontFamily: 'var(--font-editorial)',
+            fontSize: 'clamp(0.95rem, 1.2vw, 1.15rem)',
+            fontWeight: 400,
+            color: 'var(--text-secondary)',
+          }}
+        >
+          High-retention YouTube editing · Multicam Podcasts · Documentary storytelling
         </p>
       </div>
 
-      {/* Video grid: first card full-width, rest side by side */}
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '1.5rem',
-      }}>
-        {longFormProjects.map((project, i) => (
-          <LongFormCard key={project.id} project={project} index={i} />
+      {/* Flagship Featured Video */}
+      <div style={{ marginBottom: '2rem' }}>
+        {featured && <LongFormCard project={featured} isFeatured={true} />}
+      </div>
+
+      {/* Supporting Videos (Side by Side) */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '2rem',
+        }}
+      >
+        {supporting.map((proj) => (
+          <LongFormCard key={proj.id} project={proj} isFeatured={false} />
         ))}
       </div>
     </section>

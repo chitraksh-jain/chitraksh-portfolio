@@ -1,303 +1,232 @@
-import React, { useRef, useState, useEffect } from 'react'
-import { Mail, MessageCircle } from 'lucide-react'
+import React from 'react'
+import { Mail, MessageCircle, ArrowUpRight } from 'lucide-react'
 
-const GMAIL_URL = 'https://mail.google.com/mail/?view=cm&fs=1&to=chitraksh9257@gmail.com'
+const GMAIL_URL =
+  'https://mail.google.com/mail/?view=cm&fs=1&to=chitraksh9257@gmail.com'
 const WHATSAPP_URL = 'https://wa.me/919257757440'
 
-const OPEN_TO = [
-  'Freelance Projects',
-  'Social Media Editing',
-  'Brand Content',
-  'Motion Graphics',
-  'Long-term Collaborations',
-]
-
 export default function Contact() {
-  const sectionRef = useRef(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setVisible(true) },
-      { threshold: 0.25 }
-    )
-    if (sectionRef.current) observer.observe(sectionRef.current)
-    return () => observer.disconnect()
-  }, [])
-
   return (
-    <section
+    <footer
       id="contact"
-      ref={sectionRef}
-      aria-label="Contact"
+      aria-label="Contact and Inquiries"
       style={{
         position: 'relative',
-        padding: '10rem 1.5rem 8rem',
-        textAlign: 'center',
+        padding: '10rem 1.5rem 5rem',
         overflow: 'hidden',
+        zIndex: 2,
       }}
     >
-      {/* Background glow */}
-      <div aria-hidden="true" style={{
-        position: 'absolute',
-        top: '20%',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '80vw',
-        height: '60vh',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(192,57,43,0.07) 0%, transparent 70%)',
-        animation: 'breathe 20s ease-in-out infinite',
-        pointerEvents: 'none',
-      }} />
-      <div aria-hidden="true" style={{
-        position: 'absolute',
-        top: '30%',
-        left: '20%',
-        width: '40vw',
-        height: '40vh',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(30,30,30,0.6) 0%, transparent 70%)',
-        animation: 'breathe2 16s ease-in-out infinite',
-        pointerEvents: 'none',
-      }} />
+      {/* Ambient Red Glow in Background */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '30%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '75vw',
+          height: '55vh',
+          background:
+            'radial-gradient(ellipse at center, rgba(192, 57, 43, 0.12) 0%, rgba(200, 215, 235, 0.03) 45%, transparent 70%)',
+          filter: 'blur(75px)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
 
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: '700px', margin: '0 auto' }}>
+      <div
+        style={{
+          maxWidth: '860px',
+          margin: '0 auto',
+          textAlign: 'center',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
         {/* Label */}
-        <div style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0)' : 'translateY(16px)',
-          transition: 'opacity 0.7s ease, transform 0.7s ease',
-          marginBottom: '1.5rem',
-        }}>
-          <span className="label" style={{ color: 'var(--text-dim)' }}>Get in Touch</span>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <span className="label-editorial" style={{ color: 'var(--accent-red-bright)' }}>
+            Available for Select Projects
+          </span>
         </div>
 
-        {/* Big headline */}
-        <div style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0)' : 'translateY(24px)',
-          transition: 'opacity 0.9s ease 0.1s, transform 0.9s var(--transition-slow) 0.1s',
-          marginBottom: '1.5rem',
-        }}>
-          <h2
-            className="heading-xl"
-            style={{
-              background: 'linear-gradient(135deg, #e8e8e8 40%, #666 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              lineHeight: 1.05,
-            }}
-          >
-            LET'S CREATE
-            <br />
-            SOMETHING
-            <br />
-            <span style={{
-              background: 'linear-gradient(135deg, #e8e8e8 0%, var(--accent) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>
-              GREAT.
-            </span>
-          </h2>
-        </div>
+        {/* Large Editorial Headline */}
+        <h2
+          className="heading-section"
+          style={{
+            background: 'linear-gradient(180deg, #FFFFFF 30%, #8A92A6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            marginBottom: '1.75rem',
+          }}
+        >
+          LET'S CREATE
+          <br />
+          SOMETHING GREAT.
+        </h2>
 
-        {/* Open to list */}
-        <div style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0)' : 'translateY(16px)',
-          transition: 'opacity 0.7s ease 0.3s, transform 0.7s ease 0.3s',
-          marginBottom: '3rem',
-        }}>
-          <p style={{
-            fontFamily: 'var(--font)',
-            fontWeight: 300,
-            fontSize: 'clamp(0.85rem, 1.1vw, 1rem)',
-            color: 'var(--text-muted)',
-            lineHeight: 1.8,
-          }}>
-            Open to {OPEN_TO.join(' · ')}
-          </p>
-        </div>
+        {/* Supporting Copy */}
+        <p
+          style={{
+            fontFamily: 'var(--font-editorial)',
+            fontSize: 'clamp(1rem, 1.4vw, 1.2rem)',
+            fontWeight: 400,
+            color: 'var(--text-secondary)',
+            lineHeight: 1.7,
+            maxWidth: '620px',
+            margin: '0 auto 3rem',
+          }}
+        >
+          Open to freelance projects, social media editing, brand content,
+          motion graphics and long-term creative collaborations.
+        </p>
 
-        {/* CTA Buttons */}
-        <div style={{
-          display: 'flex',
-          gap: '1rem',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          marginBottom: '3rem',
-          opacity: visible ? 1 : 0,
-          transform: visible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 0.8s ease 0.4s, transform 0.8s var(--transition-slow) 0.4s',
-        }}>
-          {/* Email */}
+        {/* Glass Action Buttons */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1.25rem',
+            flexWrap: 'wrap',
+            marginBottom: '4rem',
+          }}
+        >
+          {/* Email Me Button (Glass) */}
           <a
             href={GMAIL_URL}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Email Chitraksh via Gmail"
+            className="glass-btn glass-btn-accent"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.6rem',
-              fontFamily: 'var(--font)',
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: '#080808',
-              background: 'var(--text)',
-              padding: '1rem 2rem',
-              borderRadius: '100px',
-              textDecoration: 'none',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease',
-              boxShadow: '0 4px 24px rgba(232,232,232,0.15)',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'scale(1.04)'
-              e.currentTarget.style.boxShadow = '0 8px 40px rgba(232,232,232,0.25)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'scale(1)'
-              e.currentTarget.style.boxShadow = '0 4px 24px rgba(232,232,232,0.15)'
+              padding: '1rem 2.2rem',
+              fontSize: '0.8rem',
             }}
           >
             <Mail size={16} />
-            Email Me
+            <span>Email Me</span>
+            <ArrowUpRight size={14} style={{ opacity: 0.6 }} />
           </a>
 
-          {/* WhatsApp */}
+          {/* WhatsApp Button (Glass) */}
           <a
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="WhatsApp Chitraksh"
+            className="glass-btn"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.6rem',
-              fontFamily: 'var(--font)',
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: 'var(--text)',
-              background: 'transparent',
-              padding: '1rem 2rem',
-              borderRadius: '100px',
-              border: '1px solid rgba(255,255,255,0.15)',
-              textDecoration: 'none',
-              backdropFilter: 'blur(8px)',
-              transition: 'transform 0.2s ease, border-color 0.2s ease, background 0.2s ease',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'scale(1.04)'
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'
-              e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'scale(1)'
-              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'
-              e.currentTarget.style.background = 'transparent'
+              padding: '1rem 2.2rem',
+              fontSize: '0.8rem',
             }}
           >
             <MessageCircle size={16} />
-            WhatsApp
+            <span>WhatsApp</span>
+            <ArrowUpRight size={14} style={{ opacity: 0.6 }} />
           </a>
         </div>
 
-        {/* Contact info */}
-        <div style={{
-          opacity: visible ? 0.5 : 0,
-          transition: 'opacity 0.8s ease 0.6s',
-          display: 'flex',
-          gap: '2rem',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-        }}>
+        {/* Subtle Direct Contact Details */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '2.5rem',
+            flexWrap: 'wrap',
+            paddingBottom: '6rem',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+          }}
+        >
           <a
             href="mailto:chitraksh9257@gmail.com"
             style={{
-              fontFamily: 'var(--font)',
-              fontWeight: 400,
-              fontSize: '0.75rem',
-              letterSpacing: '0.04em',
+              fontFamily: 'var(--font-editorial)',
+              fontSize: '0.82rem',
+              fontWeight: 500,
               color: 'var(--text-muted)',
               textDecoration: 'none',
-              transition: 'color 0.2s',
+              transition: 'color 0.25s',
+              letterSpacing: '0.04em',
             }}
-            onMouseEnter={e => (e.target.style.color = 'var(--text)')}
-            onMouseLeave={e => (e.target.style.color = 'var(--text-muted)')}
+            onMouseEnter={(e) => (e.target.style.color = 'var(--text-primary)')}
+            onMouseLeave={(e) => (e.target.style.color = 'var(--text-muted)')}
           >
             chitraksh9257@gmail.com
           </a>
+
           <a
             href="tel:+919257757440"
             style={{
-              fontFamily: 'var(--font)',
-              fontWeight: 400,
-              fontSize: '0.75rem',
-              letterSpacing: '0.04em',
+              fontFamily: 'var(--font-editorial)',
+              fontSize: '0.82rem',
+              fontWeight: 500,
               color: 'var(--text-muted)',
               textDecoration: 'none',
-              transition: 'color 0.2s',
+              transition: 'color 0.25s',
+              letterSpacing: '0.04em',
             }}
-            onMouseEnter={e => (e.target.style.color = 'var(--text)')}
-            onMouseLeave={e => (e.target.style.color = 'var(--text-muted)')}
+            onMouseEnter={(e) => (e.target.style.color = 'var(--text-primary)')}
+            onMouseLeave={(e) => (e.target.style.color = 'var(--text-muted)')}
           >
             +91 9257757440
           </a>
         </div>
-      </div>
 
-      {/* Footer signature */}
-      <div style={{
-        marginTop: '8rem',
-        paddingTop: '2rem',
-        borderTop: '1px solid rgba(255,255,255,0.04)',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        maxWidth: '1200px',
-        margin: '6rem auto 0',
-        padding: '2rem 0 0',
-        flexWrap: 'wrap',
-        gap: '1rem',
-      }}>
-        <span style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 800,
-          fontSize: '0.75rem',
-          letterSpacing: '0.1em',
-          color: 'var(--text-dim)',
-        }}>
-          CHITRAKSH JAIN
-        </span>
-        <span style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 400,
-          fontSize: '0.6rem',
-          letterSpacing: '0.1em',
-          color: 'var(--text-dim)',
-          textTransform: 'uppercase',
-        }}>
-          Video Editor · 2024
-        </span>
-        <span style={{
-          fontFamily: 'var(--font)',
-          fontWeight: 400,
-          fontSize: '0.6rem',
-          letterSpacing: '0.1em',
-          color: 'var(--text-dim)',
-          textTransform: 'uppercase',
-        }}>
-          Premiere Pro · After Effects · Motion Graphics
-        </span>
+        {/* Minimal Editorial Footer */}
+        <div
+          style={{
+            paddingTop: '2.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}
+        >
+          <div style={{ textAlign: 'left' }}>
+            <span
+              style={{
+                fontFamily: 'var(--font-editorial)',
+                fontWeight: 800,
+                fontSize: '0.85rem',
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              CHITRAKSH JAIN
+            </span>
+            <span
+              style={{
+                display: 'block',
+                fontFamily: 'var(--font-editorial)',
+                fontSize: '0.62rem',
+                fontWeight: 600,
+                color: 'var(--text-dim)',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                marginTop: '0.2rem',
+              }}
+            >
+              Video Editor &amp; Motion Graphics
+            </span>
+          </div>
+
+          <div
+            style={{
+              fontFamily: 'var(--font-editorial)',
+              fontSize: '0.62rem',
+              fontWeight: 500,
+              color: 'var(--text-dim)',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Designed &amp; Developed for Cinematic Motion · 2024
+          </div>
+        </div>
       </div>
-    </section>
+    </footer>
   )
 }
