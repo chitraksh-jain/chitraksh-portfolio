@@ -1,0 +1,77 @@
+/* ============================================================
+   ANIMATIONS — Chitraksh Jain Portfolio
+   ============================================================ */
+
+/* ——— Fade up ——— */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+/* ——— Fade in ——— */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ——— Scale in ——— */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.93); filter: blur(8px); }
+  to   { opacity: 1; transform: scale(1);    filter: blur(0); }
+}
+
+/* ——— Pulse scroll indicator ——— */
+@keyframes pulseDown {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%       { transform: translateY(6px); opacity: 1; }
+}
+
+/* ——— Background radial breathe ——— */
+@keyframes breathe {
+  0%   { transform: scale(1)   translate(0, 0); }
+  33%  { transform: scale(1.08) translate(2%, -3%); }
+  66%  { transform: scale(0.96) translate(-2%, 3%); }
+  100% { transform: scale(1)   translate(0, 0); }
+}
+
+@keyframes breathe2 {
+  0%   { transform: scale(1)   translate(0, 0); }
+  33%  { transform: scale(0.94) translate(-3%, 2%); }
+  66%  { transform: scale(1.06) translate(3%, -2%); }
+  100% { transform: scale(1)   translate(0, 0); }
+}
+
+/* ——— Glow pulse ——— */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 24px rgba(192, 57, 43, 0.12), 0 0 60px rgba(192, 57, 43, 0.04); }
+  50%       { box-shadow: 0 0 40px rgba(192, 57, 43, 0.2),  0 0 90px rgba(192, 57, 43, 0.08); }
+}
+
+/* ——— Letter stagger (used by CTA) ——— */
+@keyframes letterIn {
+  from { opacity: 0; transform: translateY(40px) rotateX(40deg); }
+  to   { opacity: 1; transform: translateY(0) rotateX(0deg); }
+}
+
+/* ——— Horizontal track slide ——— */
+.animate-fade-up {
+  animation: fadeUp 0.9s var(--transition-slow) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.7s var(--transition) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 1s var(--transition-slow) both;
+}
+
+/* Stagger helpers */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-800 { animation-delay: 0.8s; }
