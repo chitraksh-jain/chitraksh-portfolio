@@ -7,7 +7,7 @@ import {
   VolumeX,
   Maximize,
   Minimize,
-  Film,
+  SkipForward,
 } from 'lucide-react'
 
 export default function Showreel() {
@@ -19,14 +19,11 @@ export default function Showreel() {
   const [inView, setInView] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(true)
-  const [volume, setVolume] = useState(0.8)
   const [progress, setProgress] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [currentTime, setCurrentTime] = useState(0)
   const [showControls, setShowControls] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
-  // Intersection Observer for scroll entrance
+  // Intersection observer entrance
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -40,7 +37,7 @@ export default function Showreel() {
     return () => observer.disconnect()
   }, [])
 
-  // Video event listeners
+  // Video listeners
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
@@ -48,11 +45,7 @@ export default function Showreel() {
     const handleTimeUpdate = () => {
       if (video.duration) {
         setProgress((video.currentTime / video.duration) * 100)
-        setCurrentTime(video.currentTime)
       }
-    }
-    const handleLoadedMetadata = () => {
-      setDuration(video.duration || 0)
     }
     const handlePlay = () => setPlaying(true)
     const handlePause = () => setPlaying(false)
@@ -62,14 +55,12 @@ export default function Showreel() {
     }
 
     video.addEventListener('timeupdate', handleTimeUpdate)
-    video.addEventListener('loadedmetadata', handleLoadedMetadata)
     video.addEventListener('play', handlePlay)
     video.addEventListener('pause', handlePause)
     video.addEventListener('ended', handleEnded)
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate)
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata)
       video.removeEventListener('play', handlePlay)
       video.removeEventListener('pause', handlePause)
       video.removeEventListener('ended', handleEnded)
@@ -92,17 +83,6 @@ export default function Showreel() {
     if (!video) return
     video.muted = !video.muted
     setMuted(video.muted)
-  }, [])
-
-  const handleVolumeChange = useCallback((e) => {
-    e.stopPropagation()
-    const video = videoRef.current
-    if (!video) return
-    const val = parseFloat(e.target.value)
-    video.volume = val
-    video.muted = val === 0
-    setVolume(val)
-    setMuted(val === 0)
   }, [])
 
   const handleScrub = useCallback((e) => {
@@ -141,87 +121,64 @@ export default function Showreel() {
     }, 2800)
   }, [playing])
 
-  const formatTime = (timeInSec) => {
-    if (!timeInSec || isNaN(timeInSec)) return '0:00'
-    const m = Math.floor(timeInSec / 60)
-    const s = Math.floor(timeInSec % 60)
-    return `${m}:${s.toString().padStart(2, '0')}`
-  }
-
   return (
     <section
       id="showreel"
       ref={sectionRef}
-      aria-label="Director Showreel"
+      aria-label="01 Showreel 2024"
       onMouseMove={handleMouseMove}
       style={{
         position: 'relative',
-        padding: '5rem 1.5rem 8rem',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        padding: '5rem 4rem 7rem',
+        maxWidth: '1360px',
+        margin: '0 auto',
         zIndex: 2,
       }}
     >
-      {/* Editorial Header */}
-      <div
-        style={{
-          textAlign: 'center',
-          marginBottom: '2.5rem',
-          opacity: inView ? 1 : 0,
-          transform: inView ? 'translateY(0)' : 'translateY(24px)',
-          transition: 'all 0.8s var(--ease-cinematic)',
-        }}
-      >
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            marginBottom: '0.6rem',
-          }}
-        >
-          <Film size={12} color="var(--accent-red-bright)" />
-          <span className="label-editorial" style={{ color: 'var(--text-muted)' }}>
-            Cinematic Reel · {showreel.year}
-          </span>
+      {/* Section Header Row — Reference A: 01 SHOWREEL 2024 + Badge */}
+      <div className="section-header-row">
+        <div className="section-title-wrap">
+          <span className="section-index-num">01</span>
+          <h2
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: 'clamp(1.6rem, 2.5vw, 2.6rem)',
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              color: 'var(--text-primary)',
+            }}
+          >
+            SHOWREEL 2024
+          </h2>
         </div>
-        <h2
-          style={{
-            fontFamily: 'var(--font-editorial)',
-            fontWeight: 800,
-            fontSize: 'clamp(1.8rem, 3.2vw, 3rem)',
-            letterSpacing: '-0.025em',
-            color: 'var(--text-primary)',
-          }}
-        >
-          {showreel.title}
-        </h2>
+
+        <div className="section-pill-badge">
+          {showreel.badge}
+        </div>
       </div>
 
-      {/* Cinematic 16:9 Frame (75% to 85% width) */}
+      {/* Cinematic 16:9 Video Frame — Reference A */}
       <div
         onClick={togglePlay}
         style={{
           position: 'relative',
           width: '100%',
-          maxWidth: '1080px',
           aspectRatio: '16/9',
           borderRadius: 'var(--radius-lg)',
           overflow: 'hidden',
           cursor: 'pointer',
           background: 'var(--bg-card)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: inView
-            ? '0 30px 100px -20px rgba(0, 0, 0, 0.95), 0 0 50px rgba(192, 57, 43, 0.08)'
-            : '0 20px 40px rgba(0, 0, 0, 0.6)',
-          transform: inView ? 'scale(1) translateY(0)' : 'scale(0.92) translateY(50px)',
-          opacity: inView ? 1 : 0.2,
+          boxShadow:
+            '0 30px 100px -20px rgba(0, 0, 0, 0.95), 0 0 50px rgba(217, 56, 41, 0.08)',
+          transform: inView ? 'scale(1) translateY(0)' : 'scale(0.94) translateY(40px)',
+          opacity: inView ? 1 : 0.25,
           filter: inView ? 'blur(0)' : 'blur(12px)',
-          transition: 'all 1.1s var(--ease-cinematic)',
+          transition: 'all 1s var(--ease-cinematic)',
+          marginBottom: '3.5rem',
         }}
       >
-        {/* Subtle Top Specular Reflection */}
+        {/* Specular Top Reflection */}
         <div
           style={{
             position: 'absolute',
@@ -229,7 +186,8 @@ export default function Showreel() {
             left: 0,
             right: 0,
             height: '1px',
-            background: 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.25) 50%, transparent 100%)',
+            background:
+              'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%)',
             zIndex: 3,
             pointerEvents: 'none',
           }}
@@ -252,7 +210,7 @@ export default function Showreel() {
           aria-label={showreel.title}
         />
 
-        {/* Poster Fallback Backing */}
+        {/* Poster Backing Fallback */}
         <div
           style={{
             position: 'absolute',
@@ -262,55 +220,46 @@ export default function Showreel() {
             backgroundPosition: 'center',
             zIndex: 0,
             display: playing ? 'none' : 'block',
-            opacity: playing ? 0 : 0.9,
+            opacity: playing ? 0 : 0.95,
             transition: 'opacity 0.5s ease',
           }}
         />
 
-        {/* Big Central Glass Play Button (When Paused) */}
-        {!playing && (
-          <div
+        {/* Cinematic Quote Overlay — Reference A */}
+        <div
+          style={{
+            position: 'absolute',
+            left: '3.5rem',
+            bottom: '5.5rem',
+            zIndex: 2,
+            maxWidth: '300px',
+            pointerEvents: 'none',
+            opacity: playing ? 0.35 : 0.9,
+            transition: 'opacity 0.4s ease',
+          }}
+        >
+          <p
             style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.55) 100%)',
-              zIndex: 2,
-              transition: 'opacity 0.3s ease',
+              fontFamily: 'var(--font-sans)',
+              fontSize: 'clamp(1rem, 1.4vw, 1.25rem)',
+              fontWeight: 800,
+              letterSpacing: '0.12em',
+              lineHeight: 1.35,
+              color: 'rgba(255, 255, 255, 0.85)',
+              textShadow: '0 4px 16px rgba(0, 0, 0, 0.9)',
             }}
           >
-            <div
-              style={{
-                width: '76px',
-                height: '76px',
-                borderRadius: '50%',
-                background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(20px) saturate(140%)',
-                WebkitBackdropFilter: 'blur(20px) saturate(140%)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'transform 0.3s var(--ease-cinematic), background 0.3s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.08)'
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.14)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)'
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'
-              }}
-            >
-              <Play size={26} color="#FFFFFF" fill="#FFFFFF" style={{ marginLeft: '4px' }} />
-            </div>
-          </div>
-        )}
+            STORIES
+            <br />
+            THROUGH
+            <br />
+            A DIFFERENT
+            <br />
+            LENS.
+          </p>
+        </div>
 
-        {/* Custom Glass Controls Bar */}
+        {/* Custom Glass Player Controls Bar — Reference A */}
         <div
           onClick={(e) => e.stopPropagation()}
           style={{
@@ -319,156 +268,172 @@ export default function Showreel() {
             left: 0,
             right: 0,
             zIndex: 4,
-            padding: '2.5rem 1.5rem 1.25rem',
-            background: 'linear-gradient(to top, rgba(8, 9, 11, 0.95) 0%, rgba(8, 9, 11, 0.6) 60%, transparent 100%)',
+            padding: '2.5rem 2rem 1.25rem',
+            background:
+              'linear-gradient(to top, rgba(7, 8, 9, 0.95) 0%, rgba(7, 8, 9, 0.5) 60%, transparent 100%)',
             opacity: showControls || !playing ? 1 : 0,
-            transform: showControls || !playing ? 'translateY(0)' : 'translateY(12px)',
+            transform: showControls || !playing ? 'translateY(0)' : 'translateY(10px)',
             transition: 'all 0.35s var(--ease-cinematic)',
             pointerEvents: showControls || !playing ? 'all' : 'none',
           }}
         >
-          {/* Progress Timeline Scrubber */}
-          <div
-            ref={progressTrackRef}
-            onClick={handleScrub}
-            role="slider"
-            aria-label="Seek time"
-            aria-valuenow={Math.round(progress)}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            style={{
-              width: '100%',
-              height: '4px',
-              borderRadius: '2px',
-              background: 'rgba(255, 255, 255, 0.14)',
-              cursor: 'pointer',
-              marginBottom: '1rem',
-              position: 'relative',
-              overflow: 'hidden',
-              transition: 'height 0.2s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.height = '6px')}
-            onMouseLeave={(e) => (e.currentTarget.style.height = '4px')}
-          >
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                height: '100%',
-                width: `${progress}%`,
-                background: 'linear-gradient(90deg, #A0A8B8 0%, var(--accent-red-bright) 100%)',
-                borderRadius: '2px',
-              }}
-            />
-          </div>
-
           {/* Controls Cluster */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <button
-                onClick={togglePlay}
-                aria-label={playing ? 'Pause' : 'Play'}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--text-primary)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '0.2rem',
-                }}
-              >
-                {playing ? <Pause size={18} /> : <Play size={18} fill="currentColor" />}
-              </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            {/* Play/Pause Button */}
+            <button
+              onClick={togglePlay}
+              aria-label={playing ? 'Pause' : 'Play'}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#FFFFFF',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0.2rem',
+              }}
+            >
+              {playing ? <Pause size={18} /> : <Play size={18} fill="#FFFFFF" />}
+            </button>
 
-              <button
-                onClick={toggleMute}
-                aria-label={muted ? 'Unmute' : 'Mute'}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--text-primary)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '0.2rem',
-                }}
-              >
-                {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-              </button>
+            {/* Skip / Next */}
+            <button
+              onClick={() => {
+                if (videoRef.current) videoRef.current.currentTime += 5
+              }}
+              aria-label="Skip forward 5s"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0.2rem',
+              }}
+            >
+              <SkipForward size={16} />
+            </button>
 
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.05}
-                value={muted ? 0 : volume}
-                onChange={handleVolumeChange}
-                aria-label="Volume slider"
+            {/* Red Progress Timeline Scrubber */}
+            <div
+              ref={progressTrackRef}
+              onClick={handleScrub}
+              role="slider"
+              aria-label="Timeline progress"
+              aria-valuenow={Math.round(progress)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              style={{
+                flex: 1,
+                height: '3px',
+                borderRadius: '2px',
+                background: 'rgba(255, 255, 255, 0.16)',
+                cursor: 'pointer',
+                position: 'relative',
+              }}
+            >
+              <div
                 style={{
-                  width: '65px',
-                  accentColor: 'var(--accent-red-bright)',
-                  cursor: 'pointer',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  height: '100%',
+                  width: `${progress}%`,
+                  background: 'var(--accent-red)',
+                  borderRadius: '2px',
                 }}
               />
-
-              <span
-                style={{
-                  fontFamily: 'var(--font-editorial)',
-                  fontSize: '0.65rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.08em',
-                  color: 'var(--text-secondary)',
-                  marginLeft: '0.4rem',
-                }}
-              >
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </span>
             </div>
 
-            <div>
-              <button
-                onClick={toggleFullscreen}
-                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--text-primary)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '0.2rem',
-                }}
-              >
-                {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
-              </button>
-            </div>
+            {/* Mute / Unmute */}
+            <button
+              onClick={toggleMute}
+              aria-label={muted ? 'Unmute' : 'Mute'}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#FFFFFF',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0.2rem',
+              }}
+            >
+              {muted ? <VolumeX size={17} /> : <Volume2 size={17} />}
+            </button>
+
+            {/* Fullscreen */}
+            <button
+              onClick={toggleFullscreen}
+              aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#FFFFFF',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0.2rem',
+              }}
+            >
+              {isFullscreen ? <Minimize size={17} /> : <Maximize size={17} />}
+            </button>
           </div>
         </div>
       </div>
 
-      <p
+      {/* 4-Column Impact Metrics Bar — Reference A */}
+      <div
         style={{
-          fontFamily: 'var(--font-editorial)',
-          fontSize: '0.62rem',
-          fontWeight: 600,
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: 'var(--text-dim)',
-          marginTop: '1.25rem',
-          opacity: inView ? 0.7 : 0,
-          transition: 'opacity 0.8s ease 0.3s',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          padding: '2.5rem 0',
         }}
       >
-        Single click to play / pause · Full sound available
-      </p>
+        {showreel.metrics.map((item, idx) => (
+          <div
+            key={item.label}
+            style={{
+              padding: '0 2rem',
+              borderRight:
+                idx < showreel.metrics.length - 1
+                  ? '1px solid rgba(255, 255, 255, 0.08)'
+                  : 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.4rem',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: 'clamp(2rem, 3.2vw, 3rem)',
+                fontWeight: 900,
+                letterSpacing: '-0.03em',
+                lineHeight: 1,
+                color: '#FFFFFF',
+              }}
+            >
+              {item.value}
+            </span>
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.62rem',
+                fontWeight: 700,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                color: 'var(--text-muted)',
+              }}
+            >
+              {item.label}
+            </span>
+          </div>
+        ))}
+      </div>
     </section>
   )
 }

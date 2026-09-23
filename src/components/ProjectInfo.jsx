@@ -1,146 +1,76 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React from 'react'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 
-export default function ProjectInfo({ project }) {
-  const [displayedProject, setDisplayedProject] = useState(project)
-  const [transitionState, setTransitionState] = useState('idle') // 'exiting' | 'entering' | 'idle'
-  const prevIdRef = useRef(project?.id)
-
-  useEffect(() => {
-    if (!project || project.id === prevIdRef.current) return
-
-    // Trigger smooth editorial transition
-    setTransitionState('exiting')
-    const timerOut = setTimeout(() => {
-      setDisplayedProject(project)
-      prevIdRef.current = project.id
-      setTransitionState('entering')
-
-      const timerIn = setTimeout(() => {
-        setTransitionState('idle')
-      }, 350)
-      return () => clearTimeout(timerIn)
-    }, 200)
-
-    return () => clearTimeout(timerOut)
-  }, [project])
-
-  if (!displayedProject) return null
-
-  // Transition styles
-  const isExiting = transitionState === 'exiting'
-  const isEntering = transitionState === 'entering'
-
-  const transitionStyle = {
-    opacity: isExiting ? 0 : 1,
-    transform: isExiting
-      ? 'translateY(-10px) scale(0.98)'
-      : isEntering
-      ? 'translateY(12px) scale(0.98)'
-      : 'translateY(0) scale(1)',
-    filter: isExiting || isEntering ? 'blur(6px)' : 'blur(0px)',
-    transition: 'opacity 0.28s var(--ease-cinematic), transform 0.28s var(--ease-cinematic), filter 0.28s var(--ease-cinematic)',
-    willChange: 'opacity, transform, filter',
-  }
+export default function ProjectInfo({
+  project,
+  activeIndex,
+  totalProjects,
+  onPrev,
+  onNext,
+}) {
+  if (!project) return null
 
   return (
     <div
       aria-live="polite"
-      aria-label={`Current featured project: ${displayedProject.title}`}
+      aria-label={`Current project: ${project.title}`}
       style={{
-        ...transitionStyle,
         textAlign: 'center',
         maxWidth: '680px',
         margin: '0 auto',
         padding: '0 1.5rem',
-        pointerEvents: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}
     >
-      {/* Editorial Index & Category Bar */}
-      <div
+      {/* Category Red Tag — Reference A */}
+      <span
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0.85rem',
-          marginBottom: '0.65rem',
+          fontFamily: 'var(--font-sans)',
+          fontSize: '0.68rem',
+          fontWeight: 800,
+          letterSpacing: '0.22em',
+          textTransform: 'uppercase',
+          color: 'var(--accent-red)',
+          display: 'block',
+          marginBottom: '0.45rem',
         }}
       >
-        <span
-          style={{
-            fontFamily: 'var(--font-editorial)',
-            fontWeight: 800,
-            fontSize: '0.75rem',
-            color: 'var(--accent-red-bright)',
-            letterSpacing: '0.08em',
-          }}
-        >
-          {displayedProject.index}
-        </span>
-        <span
-          style={{
-            width: '24px',
-            height: '1px',
-            background: 'rgba(255, 255, 255, 0.15)',
-          }}
-        />
-        <span
-          className="label-editorial"
-          style={{
-            color: 'var(--text-secondary)',
-            letterSpacing: '0.22em',
-          }}
-        >
-          {displayedProject.category}
-        </span>
-      </div>
+        {project.category}
+      </span>
 
-      {/* Main Title */}
+      {/* Project Title — Reference A */}
       <h3
         style={{
-          fontFamily: 'var(--font-editorial)',
+          fontFamily: 'var(--font-sans)',
           fontWeight: 800,
-          fontSize: 'clamp(1.5rem, 2.5vw, 2.2rem)',
+          fontSize: 'clamp(1.5rem, 2.4vw, 2.2rem)',
           letterSpacing: '-0.025em',
-          color: 'var(--text-primary)',
+          color: '#FFFFFF',
           lineHeight: 1.15,
-          marginBottom: '0.35rem',
+          marginBottom: '0.5rem',
         }}
       >
-        {displayedProject.title}
+        {project.title}
       </h3>
 
-      {/* Category Subtitle */}
+      {/* Short Description — Reference A */}
       <p
         style={{
-          fontFamily: 'var(--font-editorial)',
-          fontSize: '0.72rem',
-          fontWeight: 600,
-          letterSpacing: '0.14em',
-          textTransform: 'uppercase',
-          color: 'var(--accent-red-bright)',
-          opacity: 0.9,
-          marginBottom: '0.85rem',
-        }}
-      >
-        {displayedProject.categoryLabel}
-      </p>
-
-      {/* Description */}
-      <p
-        style={{
-          fontFamily: 'var(--font-editorial)',
+          fontFamily: 'var(--font-sans)',
           fontWeight: 400,
           fontSize: 'clamp(0.85rem, 1.1vw, 0.98rem)',
           color: 'var(--text-secondary)',
-          lineHeight: 1.6,
+          lineHeight: 1.55,
           maxWidth: '520px',
           margin: '0 auto 1rem',
         }}
       >
-        {displayedProject.description}
+        {project.description}
       </p>
 
-      {/* Tools & Duration Pills */}
+      {/* Tool Pills — Reference A */}
       <div
         style={{
           display: 'flex',
@@ -148,45 +78,135 @@ export default function ProjectInfo({ project }) {
           justifyContent: 'center',
           gap: '0.5rem',
           flexWrap: 'wrap',
+          marginBottom: '1.5rem',
         }}
       >
-        {displayedProject.tools.map((tool) => (
+        {project.tools.map((tool) => (
           <span
             key={tool}
             style={{
-              fontFamily: 'var(--font-editorial)',
+              fontFamily: 'var(--font-sans)',
               fontSize: '0.62rem',
               fontWeight: 600,
-              letterSpacing: '0.1em',
+              letterSpacing: '0.08em',
               textTransform: 'uppercase',
               color: 'var(--text-muted)',
               padding: '0.25rem 0.75rem',
               borderRadius: 'var(--radius-pill)',
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
+              background: 'rgba(255, 255, 255, 0.035)',
+              border: '1px solid rgba(255, 255, 255, 0.07)',
             }}
           >
             {tool}
           </span>
         ))}
+      </div>
 
-        {displayedProject.duration && (
+      {/* Interactive Stepper Navigation Controls — Reference A: (←) 05 / 10 (→) */}
+      <div
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '1.25rem',
+          background: 'rgba(255, 255, 255, 0.03)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(16px)',
+          padding: '0.35rem 0.85rem',
+          borderRadius: 'var(--radius-pill)',
+        }}
+      >
+        {/* Left Arrow Button */}
+        <button
+          onClick={onPrev}
+          aria-label="Previous project"
+          style={{
+            width: '28px',
+            height: '28px',
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--text-secondary)',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#FFFFFF'
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--text-secondary)'
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
+          }}
+        >
+          <ArrowLeft size={13} />
+        </button>
+
+        {/* Counter: 05 / 10 */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
           <span
             style={{
-              fontFamily: 'var(--font-editorial)',
-              fontSize: '0.62rem',
-              fontWeight: 600,
-              letterSpacing: '0.1em',
-              color: 'var(--text-muted)',
-              padding: '0.25rem 0.75rem',
-              borderRadius: 'var(--radius-pill)',
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              letterSpacing: '0.08em',
+              color: 'var(--accent-red)',
             }}
           >
-            {displayedProject.duration}
+            {String(activeIndex + 1).padStart(2, '0')}
           </span>
-        )}
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.72rem',
+              color: 'var(--text-dim)',
+            }}
+          >
+            /
+          </span>
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              color: 'var(--text-muted)',
+            }}
+          >
+            {String(totalProjects).padStart(2, '0')}
+          </span>
+        </div>
+
+        {/* Right Arrow Button */}
+        <button
+          onClick={onNext}
+          aria-label="Next project"
+          style={{
+            width: '28px',
+            height: '28px',
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--text-secondary)',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#FFFFFF'
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--text-secondary)'
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)'
+          }}
+        >
+          <ArrowRight size={13} />
+        </button>
       </div>
     </div>
   )

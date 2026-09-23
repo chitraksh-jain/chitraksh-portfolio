@@ -1,27 +1,19 @@
-import React, { useEffect, useState } from 'react'
-
-const SKILLS = [
-  'Adobe Premiere Pro',
-  'After Effects',
-  'Motion Graphics',
-  'Post-Production',
-  'Social Media Content',
-]
+import React from 'react'
+import { heroSoftware } from '../data/projects'
+import { ArrowDown } from 'lucide-react'
 
 export default function Hero({ scrollY }) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 80)
-    return () => clearTimeout(t)
-  }, [])
-
   // Parallax fade and upward shift as user begins scrolling
-  const progress = Math.min(Math.max((scrollY || 0) / 450, 0), 1)
+  const progress = Math.min(Math.max((scrollY || 0) / 480, 0), 1)
   const heroOpacity = 1 - progress * 0.95
-  const heroTranslate = -progress * 70
-  const heroScale = 1 - progress * 0.05
+  const heroTranslate = -progress * 65
+  const heroScale = 1 - progress * 0.04
   const heroBlur = progress * 6
+
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id)
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  }
 
   return (
     <section
@@ -32,18 +24,48 @@ export default function Hero({ scrollY }) {
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
         justifyContent: 'center',
-        padding: '7rem 1.5rem 4rem',
+        padding: '8rem 4rem 4rem',
         overflow: 'hidden',
         zIndex: 2,
       }}
     >
+      {/* Cinematic Editing Suite Background Atmosphere (Reference A) */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage:
+            'radial-gradient(ellipse at 70% 40%, rgba(217, 56, 41, 0.12) 0%, transparent 55%), radial-gradient(ellipse at 80% 25%, rgba(100, 140, 200, 0.08) 0%, transparent 50%), url("https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1920&q=80")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 40%',
+          opacity: 0.22,
+          filter: 'contrast(125%) brightness(65%) saturate(120%)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
+      {/* Dark Vignette & Gradient Masks */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'linear-gradient(to right, rgba(7, 8, 9, 0.96) 35%, rgba(7, 8, 9, 0.7) 65%, rgba(7, 8, 9, 0.9) 100%), linear-gradient(to bottom, rgba(7, 8, 9, 0.5) 0%, transparent 40%, rgba(7, 8, 9, 0.98) 100%)',
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
+
+      {/* Main Left-Aligned Content Container — Reference A */}
       <div
         style={{
-          width: '100%',
-          maxWidth: '920px',
-          textAlign: 'center',
+          position: 'relative',
+          zIndex: 2,
+          maxWidth: '780px',
           transform: `translateY(${heroTranslate}px) scale(${heroScale})`,
           opacity: heroOpacity,
           filter: `blur(${heroBlur}px)`,
@@ -51,160 +73,156 @@ export default function Hero({ scrollY }) {
           willChange: 'transform, opacity, filter',
         }}
       >
-        {/* Role Pill */}
-        <div
-          className={mounted ? 'anim-editorial-reveal anim-delay-1' : ''}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.4rem 1.1rem',
-            borderRadius: 'var(--radius-pill)',
-            background: 'rgba(255, 255, 255, 0.035)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(16px)',
-            marginBottom: '1.75rem',
-          }}
-        >
+        {/* Top Tagline */}
+        <div style={{ marginBottom: '1.25rem' }}>
           <span
+            className="section-tag-label"
             style={{
-              width: '6px',
-              height: '6px',
-              borderRadius: '50%',
-              background: 'var(--accent-red-bright)',
-              boxShadow: '0 0 8px var(--accent-red-bright)',
-              animation: 'statusDotBlink 2.4s ease-in-out infinite',
+              color: 'var(--text-secondary)',
+              letterSpacing: '0.24em',
+              fontSize: '0.72rem',
             }}
-          />
-          <span className="label-editorial" style={{ color: 'var(--text-primary)', letterSpacing: '0.22em' }}>
-            Video Editor &amp; Motion Designer
+          >
+            VIDEO EDITOR &amp; MOTION DESIGNER
           </span>
         </div>
 
-        {/* Name Display */}
-        <div className={mounted ? 'anim-editorial-reveal anim-delay-2' : ''}>
-          <h1
-            className="heading-display"
-            style={{
-              background: 'linear-gradient(180deg, #FFFFFF 30%, #8A92A6 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              textShadow: '0 10px 40px rgba(0,0,0,0.6)',
-              marginBottom: '1.5rem',
-            }}
-          >
-            CHITRAKSH
-            <br />
-            JAIN
-          </h1>
-        </div>
-
-        {/* Editorial Subtitle */}
-        <div
-          className={mounted ? 'anim-editorial-reveal anim-delay-3' : ''}
-          style={{ maxWidth: '580px', margin: '0 auto 2.25rem' }}
-        >
-          <p
-            style={{
-              fontFamily: 'var(--font-editorial)',
-              fontSize: 'clamp(1.05rem, 1.6vw, 1.28rem)',
-              fontWeight: 400,
-              color: 'var(--text-secondary)',
-              lineHeight: 1.65,
-              letterSpacing: '-0.01em',
-            }}
-          >
-            Turning raw footage into compelling visual stories.
-            <br />
-            <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
-              50+ reels edited across social, brand and creative content.
-            </span>
-          </p>
-        </div>
-
-        {/* Skills Tagline */}
-        <div
-          className={mounted ? 'anim-editorial-reveal anim-delay-4' : ''}
+        {/* Headline — Reference A */}
+        <h1
           style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: '0.65rem',
+            fontFamily: 'var(--font-sans)',
+            fontSize: 'clamp(3.5rem, 7vw, 6.8rem)',
+            fontWeight: 900,
+            letterSpacing: '-0.04em',
+            lineHeight: 0.94,
+            color: '#FFFFFF',
+            textShadow: '0 12px 40px rgba(0,0,0,0.85)',
+            marginBottom: '1.75rem',
           }}
         >
-          {SKILLS.map((skill) => (
-            <span
-              key={skill}
-              style={{
-                fontFamily: 'var(--font-editorial)',
-                fontSize: '0.68rem',
-                fontWeight: 600,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: 'var(--text-muted)',
-                padding: '0.45rem 1rem',
-                borderRadius: 'var(--radius-pill)',
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
-                transition: 'all 0.3s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--text-primary)'
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)'
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--text-muted)'
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)'
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)'
-              }}
-            >
-              {skill}
-            </span>
+          CHITRAKSH
+          <br />
+          JAIN
+        </h1>
+
+        {/* Subtitle Copy — Reference A */}
+        <p
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: 'clamp(1.05rem, 1.45vw, 1.25rem)',
+            fontWeight: 400,
+            color: 'var(--text-secondary)',
+            lineHeight: 1.6,
+            maxWidth: '560px',
+            marginBottom: '2.5rem',
+          }}
+        >
+          Turning raw footage into compelling visual stories for brands,
+          creators and 50+ viral reels.
+        </p>
+
+        {/* Software Badges Row — Reference A [Pr], [Ae], [Ps] */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          {heroSoftware.map((item) => (
+            <div key={item.code} className="software-badge">
+              <div
+                className="software-icon-box"
+                style={{
+                  background: item.bg,
+                  color: item.color,
+                  border: `1px solid ${item.border}`,
+                }}
+              >
+                {item.code}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    color: 'var(--text-primary)',
+                    lineHeight: 1.15,
+                  }}
+                >
+                  {item.name}
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '0.55rem',
+                    fontWeight: 500,
+                    color: 'var(--text-muted)',
+                    lineHeight: 1,
+                    letterSpacing: '0.04em',
+                  }}
+                >
+                  {item.role}
+                </span>
+              </div>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Scroll to explore hint */}
+      {/* Bottom Right Scroll To Explore — Reference A */}
       <div
-        className={mounted ? 'anim-editorial-reveal anim-delay-5' : ''}
+        onClick={() => scrollToSection('showreel')}
         style={{
           position: 'absolute',
-          bottom: '2.5rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
+          bottom: '3.5rem',
+          left: '4rem',
+          zIndex: 2,
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          gap: '0.6rem',
-          opacity: Math.max(0, 1 - progress * 3),
-          transition: 'opacity 0.2s',
-          pointerEvents: 'none',
+          gap: '1rem',
+          cursor: 'pointer',
+          opacity: Math.max(0, 1 - progress * 2.5),
+          transition: 'opacity 0.25s',
         }}
       >
         <span
           style={{
-            fontFamily: 'var(--font-editorial)',
-            fontSize: '0.58rem',
+            fontFamily: 'var(--font-sans)',
+            fontSize: '0.62rem',
             fontWeight: 700,
-            letterSpacing: '0.24em',
+            letterSpacing: '0.22em',
             textTransform: 'uppercase',
             color: 'var(--text-muted)',
           }}
         >
-          Scroll to explore
+          SCROLL TO EXPLORE
         </span>
-        <div style={{ animation: 'scrollIndicatorPulse 2.4s ease-in-out infinite' }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M12 4V18M12 18L6 12M12 18L18 12"
-              stroke="var(--text-muted)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+        <div
+          style={{
+            width: '32px',
+            height: '32px',
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--text-secondary)',
+            transition: 'all 0.25s',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+            e.currentTarget.style.color = '#FFFFFF'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'
+            e.currentTarget.style.color = 'var(--text-secondary)'
+          }}
+        >
+          <ArrowDown size={14} />
         </div>
       </div>
     </section>

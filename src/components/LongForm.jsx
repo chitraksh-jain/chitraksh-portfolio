@@ -1,21 +1,19 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react'
 import { longFormProjects } from '../data/projects'
-import { Play, Pause, Volume2, VolumeX, Maximize, Clock, Eye } from 'lucide-react'
+import { Play, Volume2, VolumeX, Maximize } from 'lucide-react'
 
 function LongFormCard({ project, isFeatured }) {
   const videoRef = useRef(null)
   const cardRef = useRef(null)
-  const [inView, setInView] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(true)
   const [hovered, setHovered] = useState(false)
   const [progress, setProgress] = useState(0)
 
-  // Pause when out of view and trigger entrance
+  // Pause when scrolled out of view
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setInView(entry.isIntersecting)
         if (!entry.isIntersecting && videoRef.current && !videoRef.current.paused) {
           videoRef.current.pause()
         }
@@ -88,21 +86,15 @@ function LongFormCard({ project, isFeatured }) {
         overflow: 'hidden',
         cursor: 'pointer',
         background: 'var(--bg-card)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
+        border: '1px solid rgba(255, 255, 255, 0.09)',
         boxShadow: hovered
-          ? '0 30px 80px -15px rgba(0, 0, 0, 0.95), 0 0 35px rgba(192, 57, 43, 0.15)'
-          : '0 20px 50px -10px rgba(0, 0, 0, 0.75)',
-        transform: hovered
-          ? 'scale(1.02) translateY(-4px)'
-          : inView
-          ? 'scale(1) translateY(0)'
-          : 'scale(0.96) translateY(24px)',
-        opacity: inView ? 1 : 0.4,
-        filter: inView ? 'blur(0)' : 'blur(8px)',
-        transition: 'all 0.6s var(--ease-cinematic)',
+          ? '0 30px 80px -15px rgba(0, 0, 0, 0.95), 0 0 35px rgba(217, 56, 41, 0.15)'
+          : '0 20px 50px -10px rgba(0, 0, 0, 0.8)',
+        transform: hovered ? 'scale(1.02) translateY(-4px)' : 'scale(1) translateY(0)',
+        transition: 'all 0.45s var(--ease-cinematic)',
       }}
     >
-      {/* Top Hairline Reflection */}
+      {/* Top Hairline Specular Edge */}
       <div
         style={{
           position: 'absolute',
@@ -111,7 +103,7 @@ function LongFormCard({ project, isFeatured }) {
           right: 0,
           height: '1px',
           background:
-            'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.22) 50%, transparent 100%)',
+            'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.25) 50%, transparent 100%)',
           zIndex: 3,
           pointerEvents: 'none',
         }}
@@ -151,19 +143,19 @@ function LongFormCard({ project, isFeatured }) {
         }}
       />
 
-      {/* Gradient Darkening Overlay */}
+      {/* Darkening Bottom Overlay */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           background:
-            'linear-gradient(to top, rgba(8, 9, 11, 0.95) 0%, rgba(8, 9, 11, 0.4) 50%, transparent 80%)',
+            'linear-gradient(to top, rgba(7, 8, 9, 0.95) 0%, rgba(7, 8, 9, 0.35) 50%, transparent 80%)',
           zIndex: 2,
           pointerEvents: 'none',
         }}
       />
 
-      {/* Duration & Views Badges */}
+      {/* Duration & Views Badges — Reference A */}
       <div
         style={{
           position: 'absolute',
@@ -176,62 +168,46 @@ function LongFormCard({ project, isFeatured }) {
           zIndex: 3,
         }}
       >
+        {/* Duration badge */}
         <div
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            background: 'rgba(8, 9, 11, 0.75)',
+            background: 'rgba(7, 8, 9, 0.8)',
             backdropFilter: 'blur(12px)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            padding: '0.3rem 0.7rem',
+            padding: '0.25rem 0.65rem',
             borderRadius: 'var(--radius-pill)',
+            fontFamily: 'var(--font-sans)',
+            fontSize: '0.62rem',
+            fontWeight: 700,
+            color: '#FFFFFF',
+            letterSpacing: '0.06em',
           }}
         >
-          <Clock size={12} color="var(--accent-red-bright)" />
-          <span
-            style={{
-              fontFamily: 'var(--font-editorial)',
-              fontSize: '0.62rem',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '0.05em',
-            }}
-          >
-            {project.duration}
-          </span>
+          {project.duration}
         </div>
 
+        {/* View count badge */}
         {project.views && (
           <div
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              background: 'rgba(8, 9, 11, 0.75)',
+              background: 'rgba(7, 8, 9, 0.8)',
               backdropFilter: 'blur(12px)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              padding: '0.3rem 0.7rem',
+              padding: '0.25rem 0.65rem',
               borderRadius: 'var(--radius-pill)',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.62rem',
+              fontWeight: 600,
+              color: 'var(--text-secondary)',
             }}
           >
-            <Eye size={12} color="var(--text-secondary)" />
-            <span
-              style={{
-                fontFamily: 'var(--font-editorial)',
-                fontSize: '0.62rem',
-                fontWeight: 600,
-                color: 'var(--text-secondary)',
-              }}
-            >
-              {project.views}
-            </span>
+            {project.views}
           </div>
         )}
       </div>
 
-      {/* Play/Pause Central Indicator on Hover or when Paused */}
-      {(!playing || hovered) && (
+      {/* Central Play Button Overlay — Reference A */}
+      {!playing && (
         <div
           style={{
             position: 'absolute',
@@ -244,13 +220,12 @@ function LongFormCard({ project, isFeatured }) {
         >
           <div
             style={{
-              width: '64px',
-              height: '64px',
+              width: isFeatured ? '68px' : '54px',
+              height: isFeatured ? '68px' : '54px',
               borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'rgba(217, 56, 41, 0.85)',
               backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 16px 36px rgba(0, 0, 0, 0.7)',
+              boxShadow: '0 16px 36px rgba(217, 56, 41, 0.45)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -258,65 +233,53 @@ function LongFormCard({ project, isFeatured }) {
               transform: hovered ? 'scale(1.1)' : 'scale(1)',
             }}
           >
-            {playing ? (
-              <Pause size={20} color="#FFFFFF" />
-            ) : (
-              <Play size={22} color="#FFFFFF" fill="#FFFFFF" style={{ marginLeft: '3px' }} />
-            )}
+            <Play
+              size={isFeatured ? 24 : 18}
+              color="#FFFFFF"
+              fill="#FFFFFF"
+              style={{ marginLeft: '3px' }}
+            />
           </div>
         </div>
       )}
 
-      {/* Bottom Editorial Content */}
+      {/* Bottom Editorial Content — Reference A */}
       <div
         style={{
           position: 'absolute',
           bottom: 0,
           left: 0,
           right: 0,
-          padding: '1.75rem',
+          padding: isFeatured ? '2rem' : '1.5rem',
           zIndex: 3,
         }}
       >
-        <span
-          className="label-editorial"
-          style={{
-            color: 'var(--accent-red-bright)',
-            display: 'block',
-            marginBottom: '0.35rem',
-          }}
-        >
-          {project.category}
-        </span>
         <h3
           style={{
-            fontFamily: 'var(--font-editorial)',
+            fontFamily: 'var(--font-sans)',
             fontWeight: 800,
-            fontSize: isFeatured ? 'clamp(1.25rem, 2vw, 1.8rem)' : '1.15rem',
-            color: 'var(--text-primary)',
+            fontSize: isFeatured ? 'clamp(1.3rem, 2.2vw, 1.85rem)' : '1.15rem',
+            color: '#FFFFFF',
             letterSpacing: '-0.02em',
             lineHeight: 1.2,
-            marginBottom: '0.5rem',
+            marginBottom: '0.35rem',
           }}
         >
           {project.title}
         </h3>
 
-        {isFeatured && (
-          <p
-            style={{
-              fontFamily: 'var(--font-editorial)',
-              fontSize: '0.85rem',
-              fontWeight: 400,
-              color: 'var(--text-secondary)',
-              lineHeight: 1.55,
-              maxWidth: '620px',
-              marginBottom: '0.85rem',
-            }}
-          >
-            {project.description}
-          </p>
-        )}
+        <p
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: isFeatured ? '0.88rem' : '0.78rem',
+            fontWeight: 400,
+            color: 'var(--text-secondary)',
+            lineHeight: 1.5,
+            maxWidth: '620px',
+          }}
+        >
+          {project.description}
+        </p>
 
         {/* Progress Bar (Visible when playing) */}
         <div
@@ -326,7 +289,7 @@ function LongFormCard({ project, isFeatured }) {
             background: 'rgba(255, 255, 255, 0.1)',
             borderRadius: '1px',
             overflow: 'hidden',
-            marginTop: '0.5rem',
+            marginTop: '0.65rem',
             opacity: playing ? 1 : 0,
             transition: 'opacity 0.25s',
           }}
@@ -335,7 +298,7 @@ function LongFormCard({ project, isFeatured }) {
             style={{
               height: '100%',
               width: `${progress}%`,
-              background: 'var(--accent-red-bright)',
+              background: 'var(--accent-red)',
             }}
           />
         </div>
@@ -347,8 +310,8 @@ function LongFormCard({ project, isFeatured }) {
           onClick={(e) => e.stopPropagation()}
           style={{
             position: 'absolute',
-            bottom: '1.5rem',
-            right: '1.5rem',
+            bottom: '1.25rem',
+            right: '1.25rem',
             display: 'flex',
             gap: '0.5rem',
             zIndex: 4,
@@ -358,10 +321,10 @@ function LongFormCard({ project, isFeatured }) {
             onClick={toggleMute}
             aria-label={muted ? 'Unmute' : 'Mute'}
             style={{
-              width: '38px',
-              height: '38px',
+              width: '36px',
+              height: '36px',
               borderRadius: '50%',
-              background: 'rgba(8, 9, 11, 0.75)',
+              background: 'rgba(7, 8, 9, 0.8)',
               backdropFilter: 'blur(12px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               display: 'flex',
@@ -378,10 +341,10 @@ function LongFormCard({ project, isFeatured }) {
             onClick={handleFullscreen}
             aria-label="Fullscreen"
             style={{
-              width: '38px',
-              height: '38px',
+              width: '36px',
+              height: '36px',
               borderRadius: '50%',
-              background: 'rgba(8, 9, 11, 0.75)',
+              background: 'rgba(7, 8, 9, 0.8)',
               backdropFilter: 'blur(12px)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               display: 'flex',
@@ -406,56 +369,59 @@ export default function LongForm() {
   return (
     <section
       id="longform"
-      aria-label="Long-Form Video Work"
+      aria-label="03 Long-Form Content"
       style={{
-        padding: '8rem 1.5rem 6rem',
-        maxWidth: '1200px',
+        padding: '8rem 4rem 6rem',
+        maxWidth: '1360px',
         margin: '0 auto',
         position: 'relative',
         zIndex: 2,
       }}
     >
-      {/* Editorial Header */}
-      <div style={{ marginBottom: '3.5rem' }}>
-        <span className="label-editorial" style={{ color: 'var(--accent-red-bright)' }}>
-          Long-Form Storytelling
-        </span>
+      {/* Section Header Row — Reference A: 03 LONG-FORM CONTENT */}
+      <div className="section-header-row" style={{ marginBottom: '0.5rem' }}>
+        <div className="section-title-wrap">
+          <span className="section-index-num">03</span>
+          <span className="section-tag-label">LONG-FORM CONTENT</span>
+        </div>
+      </div>
+
+      <div style={{ marginLeft: '4.5rem', marginBottom: '3.5rem' }}>
         <h2
           style={{
-            fontFamily: 'var(--font-editorial)',
-            fontWeight: 800,
-            fontSize: 'clamp(2.2rem, 4.5vw, 4.2rem)',
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 900,
+            fontSize: 'clamp(2rem, 3.8vw, 3.8rem)',
             letterSpacing: '-0.03em',
-            color: 'var(--text-primary)',
-            marginTop: '0.5rem',
-            marginBottom: '0.6rem',
+            color: '#FFFFFF',
+            marginBottom: '0.35rem',
           }}
         >
-          YouTube &amp; Narrative Work
+          YouTube &amp; Beyond
         </h2>
         <p
           style={{
-            fontFamily: 'var(--font-editorial)',
-            fontSize: 'clamp(0.95rem, 1.2vw, 1.15rem)',
+            fontFamily: 'var(--font-sans)',
+            fontSize: 'clamp(0.95rem, 1.2vw, 1.1rem)',
             fontWeight: 400,
             color: 'var(--text-secondary)',
           }}
         >
-          High-retention YouTube editing · Multicam Podcasts · Documentary storytelling
+          In-depth edits, podcasts, documentaries and storytelling.
         </p>
       </div>
 
-      {/* Flagship Featured Video */}
-      <div style={{ marginBottom: '2rem' }}>
+      {/* Flagship Featured Video (Reference A) */}
+      <div style={{ marginBottom: '2.5rem' }}>
         {featured && <LongFormCard project={featured} isFeatured={true} />}
       </div>
 
-      {/* Supporting Videos (Side by Side) */}
+      {/* Supporting Videos Row (2 Columns — Reference A) */}
       <div
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '2rem',
+          gap: '2.5rem',
         }}
       >
         {supporting.map((proj) => (

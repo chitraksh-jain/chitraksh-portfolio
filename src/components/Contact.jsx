@@ -1,5 +1,5 @@
 import React from 'react'
-import { Mail, MessageCircle, ArrowUpRight } from 'lucide-react'
+import { Mail, MessageCircle, ArrowUpRight, Globe } from 'lucide-react'
 
 const GMAIL_URL =
   'https://mail.google.com/mail/?view=cm&fs=1&to=chitraksh9257@gmail.com'
@@ -9,100 +9,122 @@ export default function Contact() {
   return (
     <footer
       id="contact"
-      aria-label="Contact and Inquiries"
+      aria-label="04 Get In Touch"
       style={{
         position: 'relative',
-        padding: '10rem 1.5rem 5rem',
+        padding: '8rem 4rem 4rem',
+        maxWidth: '1360px',
+        margin: '0 auto',
         overflow: 'hidden',
         zIndex: 2,
       }}
     >
-      {/* Ambient Red Glow in Background */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          top: '30%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '75vw',
-          height: '55vh',
-          background:
-            'radial-gradient(ellipse at center, rgba(192, 57, 43, 0.12) 0%, rgba(200, 215, 235, 0.03) 45%, transparent 70%)',
-          filter: 'blur(75px)',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
+      {/* Section Header Row — Reference A: 04 GET IN TOUCH */}
+      <div className="section-header-row" style={{ marginBottom: '1rem' }}>
+        <div className="section-title-wrap">
+          <span className="section-index-num">04</span>
+          <span className="section-tag-label">GET IN TOUCH</span>
+        </div>
+      </div>
 
       <div
         style={{
-          maxWidth: '860px',
-          margin: '0 auto',
-          textAlign: 'center',
+          marginLeft: '4.5rem',
           position: 'relative',
-          zIndex: 1,
+          marginBottom: '5rem',
         }}
       >
-        {/* Label */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <span className="label-editorial" style={{ color: 'var(--accent-red-bright)' }}>
-            Available for Select Projects
-          </span>
-        </div>
-
-        {/* Large Editorial Headline */}
-        <h2
-          className="heading-section"
+        {/* Handwritten Accent Quote — Reference A */}
+        <div
+          aria-hidden="true"
           style={{
-            background: 'linear-gradient(180deg, #FFFFFF 30%, #8A92A6 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            marginBottom: '1.75rem',
+            position: 'absolute',
+            right: '2rem',
+            top: '0rem',
+            transform: 'rotate(-4deg)',
+            fontFamily: 'var(--font-script)',
+            fontSize: 'clamp(1.8rem, 3.5vw, 3.2rem)',
+            color: 'rgba(255, 255, 255, 0.7)',
+            lineHeight: 1.1,
+            pointerEvents: 'none',
+            textAlign: 'right',
           }}
         >
-          LET'S CREATE
+          <span>Good</span>
           <br />
-          SOMETHING GREAT.
+          <span>Stories</span>
+          <br />
+          <span style={{ color: 'var(--accent-red)' }}>Better</span>
+          <br />
+          <span>People</span>
+          {/* Handwritten Red Underline Sweep */}
+          <div
+            style={{
+              width: '90px',
+              height: '3px',
+              background: 'var(--accent-red)',
+              borderRadius: '2px',
+              marginTop: '0.4rem',
+              marginLeft: 'auto',
+            }}
+          />
+        </div>
+
+        {/* Main Headline — Reference A */}
+        <h2
+          style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: 'clamp(2.8rem, 5.5vw, 5.5rem)',
+            fontWeight: 900,
+            letterSpacing: '-0.035em',
+            lineHeight: 1.05,
+            color: '#FFFFFF',
+            marginBottom: '1.75rem',
+            maxWidth: '750px',
+          }}
+        >
+          Let's Create
+          <br />
+          Something Great
+          <span style={{ color: 'var(--accent-red)', marginLeft: '0.15em' }}>
+            .
+          </span>
         </h2>
 
-        {/* Supporting Copy */}
+        {/* Subtitle Copy — Reference A */}
         <p
           style={{
-            fontFamily: 'var(--font-editorial)',
-            fontSize: 'clamp(1rem, 1.4vw, 1.2rem)',
+            fontFamily: 'var(--font-sans)',
+            fontSize: 'clamp(1rem, 1.35vw, 1.2rem)',
             fontWeight: 400,
             color: 'var(--text-secondary)',
-            lineHeight: 1.7,
+            lineHeight: 1.65,
             maxWidth: '620px',
-            margin: '0 auto 3rem',
+            marginBottom: '3rem',
           }}
         >
           Open to freelance projects, social media editing, brand content,
-          motion graphics and long-term creative collaborations.
+          motion graphics and long-term collaborations.
         </p>
 
-        {/* Glass Action Buttons */}
+        {/* Action Buttons Row — Reference A [Email Me ↗] [WhatsApp ↗] */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
             gap: '1.25rem',
             flexWrap: 'wrap',
-            marginBottom: '4rem',
+            marginBottom: '3.5rem',
           }}
         >
-          {/* Email Me Button (Glass) */}
           <a
             href={GMAIL_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="glass-btn glass-btn-accent"
+            className="glass-btn"
             style={{
-              padding: '1rem 2.2rem',
-              fontSize: '0.8rem',
+              padding: '1.05rem 2.4rem',
+              fontSize: '0.82rem',
             }}
           >
             <Mail size={16} />
@@ -110,15 +132,14 @@ export default function Contact() {
             <ArrowUpRight size={14} style={{ opacity: 0.6 }} />
           </a>
 
-          {/* WhatsApp Button (Glass) */}
           <a
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="glass-btn"
             style={{
-              padding: '1rem 2.2rem',
-              fontSize: '0.8rem',
+              padding: '1.05rem 2.4rem',
+              fontSize: '0.82rem',
             }}
           >
             <MessageCircle size={16} />
@@ -127,54 +148,54 @@ export default function Contact() {
           </a>
         </div>
 
-        {/* Subtle Direct Contact Details */}
+        {/* Direct Contact Row — Reference A */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
             gap: '2.5rem',
-            flexWrap: 'wrap',
-            paddingBottom: '6rem',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+            paddingBottom: '3rem',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
           <a
             href="mailto:chitraksh9257@gmail.com"
             style={{
-              fontFamily: 'var(--font-editorial)',
-              fontSize: '0.82rem',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.85rem',
               fontWeight: 500,
               color: 'var(--text-muted)',
               textDecoration: 'none',
               transition: 'color 0.25s',
-              letterSpacing: '0.04em',
+              letterSpacing: '0.02em',
             }}
-            onMouseEnter={(e) => (e.target.style.color = 'var(--text-primary)')}
+            onMouseEnter={(e) => (e.target.style.color = '#FFFFFF')}
             onMouseLeave={(e) => (e.target.style.color = 'var(--text-muted)')}
           >
             chitraksh9257@gmail.com
           </a>
 
+          <span style={{ color: 'rgba(255, 255, 255, 0.15)' }}>|</span>
+
           <a
             href="tel:+919257757440"
             style={{
-              fontFamily: 'var(--font-editorial)',
-              fontSize: '0.82rem',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.85rem',
               fontWeight: 500,
               color: 'var(--text-muted)',
               textDecoration: 'none',
               transition: 'color 0.25s',
-              letterSpacing: '0.04em',
+              letterSpacing: '0.02em',
             }}
-            onMouseEnter={(e) => (e.target.style.color = 'var(--text-primary)')}
+            onMouseEnter={(e) => (e.target.style.color = '#FFFFFF')}
             onMouseLeave={(e) => (e.target.style.color = 'var(--text-muted)')}
           >
             +91 9257757440
           </a>
         </div>
 
-        {/* Minimal Editorial Footer */}
+        {/* Minimal Footer — Reference A */}
         <div
           style={{
             paddingTop: '2.5rem',
@@ -182,48 +203,102 @@ export default function Contact() {
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: '1rem',
+            gap: '1.5rem',
           }}
         >
-          <div style={{ textAlign: 'left' }}>
-            <span
+          {/* Brand Mark Left */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div
               style={{
-                fontFamily: 'var(--font-editorial)',
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: 'rgba(255, 255, 255, 0.04)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'var(--font-sans)',
+                fontSize: '0.8rem',
                 fontWeight: 800,
-                fontSize: '0.85rem',
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.01em',
+                color: '#FFFFFF',
               }}
             >
-              CHITRAKSH JAIN
-            </span>
-            <span
-              style={{
-                display: 'block',
-                fontFamily: 'var(--font-editorial)',
-                fontSize: '0.62rem',
-                fontWeight: 600,
-                color: 'var(--text-dim)',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                marginTop: '0.2rem',
-              }}
-            >
-              Video Editor &amp; Motion Graphics
-            </span>
+              CJ
+            </div>
+            <div>
+              <span
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.04em',
+                  color: '#FFFFFF',
+                  display: 'block',
+                }}
+              >
+                CHITRAKSH JAIN
+              </span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.52rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-dim)',
+                }}
+              >
+                VIDEO EDITOR &amp; MOTION DESIGNER
+              </span>
+            </div>
           </div>
 
-          <div
-            style={{
-              fontFamily: 'var(--font-editorial)',
-              fontSize: '0.62rem',
-              fontWeight: 500,
-              color: 'var(--text-dim)',
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Designed &amp; Developed for Cinematic Motion · 2024
+          {/* Worldwide Availability Right — Reference A */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div style={{ textAlign: 'right' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.55rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-muted)',
+                  display: 'block',
+                }}
+              >
+                AVAILABLE FOR SELECT
+              </span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.55rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-muted)',
+                  display: 'block',
+                }}
+              >
+                PROJECTS WORLDWIDE
+              </span>
+            </div>
+            <div
+              style={{
+                width: '34px',
+                height: '34px',
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--text-secondary)',
+              }}
+            >
+              <Globe size={18} />
+            </div>
           </div>
         </div>
       </div>

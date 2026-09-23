@@ -1,35 +1,24 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 
 /**
- * useScrollGallery
- * ————————————————
- * Transforms vertical page scroll into smooth inertial horizontal translation.
- *
- * Architecture:
- * 1. Dedicated stage settling zone (progress 0 -> 0.08):
- *    The stage aligns with viewport, scales to 1, blur to 0.
- *    Card 0 remains centered.
- * 2. Active translation zone (progress 0.08 -> 0.92):
- *    Translates smoothly from Card 0 to Last Card using damped inertia.
- * 3. Exit settling zone (progress 0.92 -> 1.0):
- *    Last card settles, stage gently dissolves, resuming vertical scroll.
+ * useScrollGallery — 3D Cover-Flow Engine
+ * ——————————————————————————————————————
+ * Handles smooth inertial scroll translation, 3D perspective rotation,
+ * and direct stepper jumps (left/right arrows and category tabs).
  */
 export function useScrollGallery(itemCount) {
   const wrapperRef = useRef(null)
   const stickyRef = useRef(null)
   const trackRef = useRef(null)
 
-  // Target and current interpolated horizontal translation
   const targetXRef = useRef(0)
   const currentXRef = useRef(0)
-
-  // Target and current progress (0 to 1)
   const targetProgRef = useRef(0)
   const currentProgRef = useRef(0)
 
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [stageAlignment, setStageAlignment] = useState(0) // 0 (hidden) to 1 (settled)
-  const [stageExit, setStageExit] = useState(0) // 0 to 1 as it exits
+  const [activeIndex, setActiveIndex] = useState(4) // default to card 05 (Sneaker Ad) as in Reference A
+  const [stageAlignment, setStageAlignment] = useState(1)
+  const [stageExit, setStageExit] = useState(0)
   const [viewportWidth, setViewportWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1440
   )
@@ -37,22 +26,49 @@ export function useScrollGallery(itemCount) {
 
   // Card geometry
   const isMobile = viewportWidth < 768
-  const CARD_WIDTH = isMobile ? 240 : 300
-  const CARD_GAP = isMobile ? 24 : 40
+  const CARD_WIDTH = isMobile ? 220 : 280
+  const CARD_GAP = isMobile ? 28 : 48
   const STEP = CARD_WIDTH + CARD_GAP
 
-  // Handle window resize
+  // Resize listener
   useEffect(() => {
     const handleResize = () => setViewportWidth(window.innerWidth)
     window.addEventListener('resize', handleResize, { passive: true })
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Inertial RAF animation loop
+  // Position calculation helper for index
+  const getXForIndex = useCallback(
+    (idx) => {
+      const startX = viewportWidth / 2 - CARD_WIDTH / 2
+      return startX - idx * STEP
+    },
+    [viewportWidth, CARD_WIDTH, STEP]
+  )
+
+  // Jump to specific index (stepper or category tab)
+  const jumpToIndex = useCallback(
+    (idx) => {
+      const clamped = Math.max(0, Math.min(itemCount - 1, idx))
+      setActiveIndex(clamped)
+      targetXRef.current = getXForIndex(clamped)
+    },
+    [itemCount, getXForIndex]
+  )
+
+  const nextProject = useCallback(() => {
+    jumpToIndex(activeIndex + 1)
+  }, [activeIndex, jumpToIndex])
+
+  const prevProject = useCallback(() => {
+    jumpToIndex(activeIndex - 1)
+  }, [activeIndex, jumpToIndex])
+
+  // Continuous RAF loop with smooth inertia
   useEffect(() => {
     let animId
     function loop() {
-      // Smooth damping: 0.08 factor creates tactile inertia without lag
+      // 0.08 damping factor provides smooth fluid momentum
       currentXRef.current += (targetXRef.current - currentXRef.current) * 0.08
       currentProgRef.current += (targetProgRef.current - currentProgRef.current) * 0.08
 
@@ -61,7 +77,7 @@ export function useScrollGallery(itemCount) {
       }
       setCurrentTranslateX(currentXRef.current)
 
-      // Calculate which card is closest to viewport center
+      // Find closest card to viewport center
       const viewCenter = viewportWidth / 2
       let closestIdx = 0
       let minDistance = Infinity
@@ -83,7 +99,7 @@ export function useScrollGallery(itemCount) {
     return () => cancelAnimationFrame(animId)
   }, [itemCount, STEP, CARD_WIDTH, viewportWidth])
 
-  // Scroll listener tracking vertical scroll distance through the pinned zone
+  // Scroll listener tracking vertical scroll
   useEffect(() => {
     const handleScroll = () => {
       const wrapper = wrapperRef.current
@@ -96,33 +112,25 @@ export function useScrollGallery(itemCount) {
 
       if (maxScroll <= 0) return
 
-      // Progress through the pinned section: 0 when top touches top, 1 when bottom touches bottom
       const scrolled = -rect.top
       const rawProg = scrolled / maxScroll
       const clampedProg = Math.max(0, Math.min(1, rawProg))
 
       targetProgRef.current = clampedProg
 
-      // 1. Entry Settling Zone (0.0 to 0.08)
-      // Controls stage fade-in and scale into full alignment
-      const entryT = Math.min(1, Math.max(0, clampedProg / 0.08))
+      // Settling zones
+      const entryT = Math.min(1, Math.max(0, clampedProg / 0.06))
       setStageAlignment(entryT)
 
-      // 2. Exit Settling Zone (0.92 to 1.0)
-      const exitT = Math.min(1, Math.max(0, (clampedProg - 0.92) / 0.08))
+      const exitT = Math.min(1, Math.max(0, (clampedProg - 0.94) / 0.06))
       setStageExit(exitT)
 
-      // 3. Horizontal Travel Zone (0.08 to 0.92)
-      // Clamped normalized progress for horizontal translation
-      const travelProg = Math.min(1, Math.max(0, (clampedProg - 0.08) / 0.84))
-
-      // Card 0 center aligned with viewport center:
+      // Active translation zone
+      const travelProg = Math.min(1, Math.max(0, (clampedProg - 0.06) / 0.88))
       const startX = viewportWidth / 2 - CARD_WIDTH / 2
-      // Last card center aligned with viewport center:
       const endX = startX - (itemCount - 1) * STEP
 
-      const calculatedTargetX = startX + (endX - startX) * travelProg
-      targetXRef.current = calculatedTargetX
+      targetXRef.current = startX + (endX - startX) * travelProg
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -142,5 +150,8 @@ export function useScrollGallery(itemCount) {
     CARD_WIDTH,
     CARD_GAP,
     STEP,
+    jumpToIndex,
+    nextProject,
+    prevProject,
   }
 }

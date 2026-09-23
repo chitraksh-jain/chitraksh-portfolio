@@ -1,11 +1,10 @@
 import React from 'react'
-import { reelProjects } from '../data/projects'
+import { reelProjects, categoryTabs } from '../data/projects'
 import { useScrollGallery } from '../hooks/useScrollGallery'
 import VideoCard from './VideoCard'
 import ProjectInfo from './ProjectInfo'
-import { Film } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 
-// Vertical scroll distance per project card
 const SCROLL_PER_CARD = 320
 
 export default function HorizontalGallery() {
@@ -20,20 +19,32 @@ export default function HorizontalGallery() {
     viewportWidth,
     CARD_WIDTH,
     CARD_GAP,
+    jumpToIndex,
+    nextProject,
+    prevProject,
   } = useScrollGallery(reelProjects.length)
 
-  // Total wrapper height creates the vertical scrolling travel distance
   const wrapperHeight = `calc(100vh + ${reelProjects.length * SCROLL_PER_CARD}px)`
 
-  // Stage entrance and exit interpolation
-  const stageOpacity = Math.max(0, stageAlignment - stageExit * 0.4)
-  const stageScale = 0.94 + stageAlignment * 0.06 - stageExit * 0.04
-  const stageBlur = Math.max(0, (1 - stageAlignment) * 8 + stageExit * 6)
+  // Current active project
+  const activeProj = reelProjects[activeIndex] || reelProjects[0]
+
+  // Stage entrance/exit opacity & scale
+  const stageOpacity = Math.max(0, stageAlignment - stageExit * 0.35)
+  const stageScale = 0.95 + stageAlignment * 0.05 - stageExit * 0.03
+
+  // Handle clicking a category tab to jump to the matching project
+  const handleCategoryClick = (categoryKey) => {
+    const targetIdx = reelProjects.findIndex((p) => p.category === categoryKey)
+    if (targetIdx !== -1) {
+      jumpToIndex(targetIdx)
+    }
+  }
 
   return (
     <section
       id="gallery-stage"
-      aria-label="Horizontal Video Experience"
+      aria-label="02 Selected Work"
       style={{
         position: 'relative',
         zIndex: 3,
@@ -50,6 +61,7 @@ export default function HorizontalGallery() {
         {/* Fullscreen 100vh Sticky Stage Container */}
         <div
           ref={stickyRef}
+          className="coverflow-stage"
           style={{
             position: 'sticky',
             top: 0,
@@ -59,78 +71,117 @@ export default function HorizontalGallery() {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            padding: '4.5rem 0 2rem',
+            padding: '5rem 3rem 2rem',
             opacity: stageOpacity,
             transform: `scale(${stageScale})`,
-            filter: `blur(${stageBlur}px)`,
-            willChange: 'transform, opacity, filter',
+            willChange: 'transform, opacity',
             transition: 'opacity 0.08s linear, transform 0.08s linear',
           }}
         >
-          {/* Subtle Ambient Backlight Glow Focused on Center */}
+          {/* Ambient Ghost Watermark — Reference A (WORK) */}
+          <div className="watermark-ghost" aria-hidden="true">
+            WORK
+          </div>
+
+          {/* Volcanic Ember / Red Floor Glow — Reference A */}
           <div
             aria-hidden="true"
             style={{
               position: 'absolute',
-              top: '42%',
+              bottom: '-10vh',
               left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '70vw',
-              height: '65vh',
+              transform: 'translateX(-50%)',
+              width: '80vw',
+              height: '35vh',
               background:
-                'radial-gradient(ellipse at center, rgba(192, 57, 43, 0.12) 0%, rgba(200, 215, 235, 0.04) 40%, transparent 75%)',
+                'radial-gradient(ellipse at bottom, rgba(217, 56, 41, 0.16) 0%, rgba(217, 56, 41, 0.04) 50%, transparent 80%)',
               filter: 'blur(60px)',
               pointerEvents: 'none',
               zIndex: 0,
             }}
           />
 
-          {/* Top Stage Header */}
-          <div
-            style={{
-              textAlign: 'center',
-              zIndex: 1,
-              position: 'relative',
-              padding: '0 1.5rem',
-            }}
-          >
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                marginBottom: '0.35rem',
-              }}
-            >
-              <Film size={12} color="var(--accent-red-bright)" />
-              <span className="label-editorial" style={{ color: 'var(--text-muted)' }}>
-                Interactive Reel Experience
-              </span>
+          {/* Top Section Header Row — Reference A: 02 SELECTED WORK */}
+          <div style={{ position: 'relative', zIndex: 3, width: '100%' }}>
+            <div className="section-header-row" style={{ marginBottom: '0.4rem' }}>
+              <div className="section-title-wrap">
+                <span className="section-index-num">02</span>
+                <span className="section-tag-label">SELECTED WORK</span>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  color: 'var(--text-muted)',
+                  fontSize: '0.62rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                <span>SCROLL TO EXPLORE</span>
+                <ArrowRight size={13} />
+              </div>
             </div>
-            <h2
-              style={{
-                fontFamily: 'var(--font-editorial)',
-                fontWeight: 800,
-                fontSize: 'clamp(1.5rem, 2.4vw, 2.4rem)',
-                letterSpacing: '-0.025em',
-                color: 'var(--text-primary)',
-              }}
-            >
-              Selected Social &amp; Brand Reels
-            </h2>
+
+            <div style={{ marginLeft: '4.5rem' }}>
+              <h2
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontWeight: 900,
+                  fontSize: 'clamp(1.6rem, 2.8vw, 2.8rem)',
+                  letterSpacing: '-0.025em',
+                  color: '#FFFFFF',
+                  marginBottom: '0.25rem',
+                }}
+              >
+                Featured Projects
+              </h2>
+              <p
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.85rem',
+                  fontWeight: 400,
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                A mix of social media, ads, motion graphics, SaaS and cinematic
+                content.
+              </p>
+            </div>
           </div>
 
-          {/* Middle: Horizontal Cards Track */}
+          {/* Middle: 3D Cover-Flow Cards Track */}
           <div
             style={{
               position: 'relative',
               width: '100%',
-              height: `${Math.round(CARD_WIDTH * (16 / 9) * 1.45)}px`,
+              height: `${Math.round(CARD_WIDTH * (16 / 9) * 1.38)}px`,
               display: 'flex',
               alignItems: 'center',
               zIndex: 2,
             }}
           >
+            {/* Center Halo Backlight */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                top: '40%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '45vw',
+                height: '45vh',
+                background:
+                  'radial-gradient(ellipse at center, rgba(255, 255, 255, 0.08) 0%, rgba(217, 56, 41, 0.14) 40%, transparent 70%)',
+                filter: 'blur(50px)',
+                pointerEvents: 'none',
+                zIndex: 0,
+              }}
+            />
+
             <div
               ref={trackRef}
               style={{
@@ -141,6 +192,7 @@ export default function HorizontalGallery() {
                 alignItems: 'center',
                 gap: `${CARD_GAP}px`,
                 transform: `translateX(${currentTranslateX}px) translateY(-50%)`,
+                transformStyle: 'preserve-3d',
                 willChange: 'transform',
               }}
             >
@@ -154,81 +206,128 @@ export default function HorizontalGallery() {
                   viewportWidth={viewportWidth}
                   CARD_WIDTH={CARD_WIDTH}
                   CARD_GAP={CARD_GAP}
+                  onSelect={(i) => jumpToIndex(i)}
                 />
               ))}
             </div>
           </div>
 
-          {/* Bottom Area: Coupled Project Info & Progress Indicator */}
+          {/* Lower Stage: Active Project Info & Category Matrix — Reference A */}
           <div
             style={{
-              zIndex: 3,
               position: 'relative',
+              zIndex: 3,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: '1rem',
+              gap: '1.25rem',
             }}
           >
-            {/* Dynamic Editorial Metadata */}
-            <ProjectInfo project={reelProjects[activeIndex]} />
+            {/* Active Project Info & Stepper Controls (←) 05 / 10 (→) */}
+            <ProjectInfo
+              project={activeProj}
+              activeIndex={activeIndex}
+              totalProjects={reelProjects.length}
+              onPrev={prevProject}
+              onNext={nextProject}
+            />
 
-            {/* Subtle Progress Bar & Counter */}
+            {/* Bottom 6-Category Thumbnail Selector Matrix — Reference A */}
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '1.25rem',
-                marginTop: '0.25rem',
+                justifyContent: 'center',
+                gap: '0.85rem',
+                flexWrap: 'wrap',
+                maxWidth: '1240px',
+                width: '100%',
+                paddingTop: '0.5rem',
               }}
             >
-              <span
-                style={{
-                  fontFamily: 'var(--font-editorial)',
-                  fontSize: '0.65rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.15em',
-                  color: 'var(--accent-red-bright)',
-                }}
-              >
-                {String(activeIndex + 1).padStart(2, '0')}
-              </span>
-
-              {/* Progress Line */}
-              <div
-                style={{
-                  width: '120px',
-                  height: '2px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '1px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    height: '100%',
-                    width: `${((activeIndex + 1) / reelProjects.length) * 100}%`,
-                    background: 'var(--accent-red-bright)',
-                    transition: 'width 0.25s ease',
-                  }}
-                />
-              </div>
-
-              <span
-                style={{
-                  fontFamily: 'var(--font-editorial)',
-                  fontSize: '0.65rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.15em',
-                  color: 'var(--text-muted)',
-                }}
-              >
-                {String(reelProjects.length).padStart(2, '0')}
-              </span>
+              {categoryTabs.map((cat) => {
+                const isSelected = activeProj.category === cat.categoryKey
+                return (
+                  <div
+                    key={cat.id}
+                    onClick={() => handleCategoryClick(cat.categoryKey)}
+                    style={{
+                      flex: '1 1 160px',
+                      maxWidth: '185px',
+                      borderRadius: 'var(--radius-sm)',
+                      background: isSelected
+                        ? 'rgba(217, 56, 41, 0.12)'
+                        : 'rgba(255, 255, 255, 0.03)',
+                      border: isSelected
+                        ? '1px solid var(--accent-red)'
+                        : '1px solid rgba(255, 255, 255, 0.08)',
+                      backdropFilter: 'blur(12px)',
+                      padding: '0.65rem 0.85rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.2rem',
+                      boxShadow: isSelected
+                        ? '0 8px 24px rgba(217, 56, 41, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15)'
+                        : 'none',
+                      transition: 'all 0.3s var(--ease-cinematic)',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.borderColor =
+                          'rgba(255, 255, 255, 0.2)'
+                        e.currentTarget.style.background =
+                          'rgba(255, 255, 255, 0.06)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.borderColor =
+                          'rgba(255, 255, 255, 0.08)'
+                        e.currentTarget.style.background =
+                          'rgba(255, 255, 255, 0.03)'
+                      }
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '0.55rem',
+                        fontWeight: 800,
+                        letterSpacing: '0.1em',
+                        color: isSelected ? 'var(--accent-red)' : 'var(--text-dim)',
+                      }}
+                    >
+                      {cat.index}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '0.65rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.08em',
+                        color: isSelected ? '#FFFFFF' : 'var(--text-secondary)',
+                        lineHeight: 1.1,
+                      }}
+                    >
+                      {cat.name}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '0.52rem',
+                        fontWeight: 400,
+                        color: 'var(--text-muted)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {cat.subtitle}
+                    </span>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
